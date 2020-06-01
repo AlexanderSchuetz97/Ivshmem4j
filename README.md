@@ -15,14 +15,14 @@ Ivshmem4j is released under the GNU General Public License Version 3. <br>A copy
 
 The file "mvnw" is part of the maven-wrapper project, released under the Apache License Version 2.<br>
 See https://github.com/takari/maven-wrapper for more information regarding maven-wrapper.
-##Supported Platforms
-#####Host:
+## Supported Platforms
+##### Host:
 * Linux (amd64)
 ##### Guest:
 * Windows (amd64)
 
 Support for linux guests is planned but currently not yet implemented.
-##Building / Installation
+## Building / Installation
 #### Windows:
 Building Ivshmem4j on Windows is currently not possible.
 #### Linux:

@@ -9,7 +9,7 @@ Additionally Ivshmem4j provides some useful features such as:
 * Implementation of java.util.concurrent.locks.Lock that facilitates synchronisation between applications.
 * Implementation of InputStream/OutputStream using a Ring Buffer that resides in shared memory for communication between 2 applications.
 * Performing various atmoic operations (xadd / xchg / cmpxchg / cmpxchg16b) on Shared Memory that are not available when using RandomAccessFile.
-##License
+## License
 Ivshmem4j is released under the GNU General Public License Version 3. <br>A copy of the GNU General Public License Version 3 can be found in the COPYING file.<br>
 
 
@@ -18,14 +18,14 @@ See https://github.com/takari/maven-wrapper for more information regarding maven
 ##Supported Platforms
 #####Host:
 * Linux (amd64)
-#####Guest:
+##### Guest:
 * Windows (amd64)
 
 Support for linux guests is planned but currently not yet implemented.
 ##Building / Installation
-####Windows:
+#### Windows:
 Building Ivshmem4j on Windows is currently not possible.
-####Linux:
+#### Linux:
 Requirements:
 * mingw-cross
 * gcc
@@ -66,7 +66,7 @@ To install Ivshmem4j to a local maven repository you may instead/additionally ru
 ````
 ./mvnw -Dmaven.test.skip=true clean install
 ````
-##Runtime Dependencies
+## Runtime Dependencies
 Windows:
 * Ivshmem device driver which is contained in the virtio driver
 https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/upstream-virtio/
@@ -74,8 +74,8 @@ https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/upstream-virtio
 
 Linux:
 * No dependencies required
-##Simple Examples
-#####Common (loading native libraries):
+## How to use Ivshmem4j
+##### Common (loading native libraries):
 ````
 //Ivshmem4j does not load the native from the java.library.path to avoid introducing additional constraints
 //to your application. You may use this call to let Ivshmem4j handle loading the native libraries
@@ -83,20 +83,20 @@ Linux:
 //This only needs to be called once. Any repeaded calls are NOOPs.
 NativeLibraryLoaderHelper.loadNativeLibraries();
 ````
-#####Linux Host(ivshmem-plain):
+##### Linux Host(ivshmem-plain):
 ````
 //Create or open a shared memory file at "/dev/shm/test" 
 //Behavior for file descriptors that are not on tempfs/ramfs is undefined as Ivshmem4j never calls msync.
 //QEMU ivshmem-plain uses either /dev/shm or hubgelbtfs (not supported by Ivshmem4j)
 SharedMemory memory = LinuxMappedFileSharedMemory.create("/dev/shm/test", 64);
 ````
-#####Linux Host (ivshmem-doorbell):
+##### Linux Host (ivshmem-doorbell):
 ````
 //This requires running a ivshmem-server at "/tmp/test" which is part of the QEMU Project.
 //ivshmem-server should already be installed on your system if you use it to run a QEMU VM.
 SharedMemory tempClient = IvshmemLinuxClient.create("/tmp/test");
 ````
-#####Windows (ivshmem-plain and ivshmem-doorbell):
+##### Windows (ivshmem-plain and ivshmem-doorbell):
 ````
 //Enumerates all windows Ivshmem devices. QEMU supports multiple shared memories per virtual machine.
 Collection<IvshmemWindowsDevice> devices = IvshmemWindowsDevice.getSharedMemoryDevices();
@@ -118,7 +118,7 @@ for (IvshmemWindowsDevice device : devices) {
     }
 }
 ````
-#####Common (Usage of SharedMemory):
+##### Common (Usage of SharedMemory):
 Writing:
 ````
 //Set the entire shared memory to 0.

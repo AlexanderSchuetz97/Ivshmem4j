@@ -8,3 +8,4 @@ target/*
 .mvn/wrapper/maven-wrapper.jar
 config.sh
 .idea
+src/main/native/common/jni/*

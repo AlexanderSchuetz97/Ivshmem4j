@@ -1,0 +1,10 @@
+*.so
+*.dll
+*.o
+*.tar
+*.log
+*.jar
+target/*
+.mvn/wrapper/maven-wrapper.jar
+config.sh
+.idea

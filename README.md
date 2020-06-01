@@ -9,7 +9,7 @@ Additionally Ivshmem4j provides some useful features such as:
 * Implementation of java.util.concurrent.locks.Lock that facilitates synchronisation between applications.
 * Implementation of InputStream/OutputStream using a Ring Buffer that resides in shared memory for communication between 2 applications.
 * Performing various atmoic operations (xadd / xchg / cmpxchg / cmpxchg16b) on Shared Memory that are not available when using RandomAccessFile.
-##License
+## License
 Ivshmem4j is released under the GNU General Public License Version 3. <br>A copy of the GNU General Public License Version 3 can be found in the COPYING file.<br>
 
 

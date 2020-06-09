@@ -26,6 +26,11 @@ class CommonSharedMemory {
 
     static native long getNativeLibVersion();
 
+    /**
+     * Called to make threads currently spinning in native code return faster.
+     */
+    static native long markClosed(long device);
+
     /*
      * Read/Write
      */
@@ -64,32 +69,33 @@ class CommonSharedMemory {
      * Atomics
      */
 
-    static native long xadd(long device, long offset, long aLong[]);
+    static native long getAndAdd(long device, long offset, long aLong[]);
 
-    static native long xadd(long device, long offset, int aInt[]);
+    static native long getAndAdd(long device, long offset, int aInt[]);
 
-    static native long xadd(long device, long offset, short aShort[]);
+    static native long getAndAdd(long device, long offset, short aShort[]);
 
-    static native long xadd(long device, long offset, byte aByte[]);
+    static native long getAndAdd(long device, long offset, byte aByte[]);
 
-    static native long xchg(long device, long offset, long aLong[]);
+    static native long getAndSet(long device, long offset, long aLong[]);
 
-    static native long xchg(long device, long offset, int aInt[]);
+    static native long getAndSet(long device, long offset, int aInt[]);
 
-    static native long xchg(long device, long offset, short aShort[]);
+    static native long getAndSet(long device, long offset, short aShort[]);
 
-    static native long xchg(long device, long offset, byte aByte[]);
+    static native long getAndSet(long device, long offset, byte aByte[]);
 
-    static native long cmpxchg(long device, long offset, long expect, long update);
+    static native long compareAndSet(long device, long offset, long expect, long update);
 
-    static native long cmpxchg(long device, long offset, int expect, int update);
+    static native long compareAndSet(long device, long offset, int expect, int update);
 
-    static native long cmpxchg(long device, long offset, short expect, short update);
+    static native long compareAndSet(long device, long offset, short expect, short update);
 
-    static native long cmpxchg(long device, long offset, byte expect, byte update);
+    static native long compareAndSet(long device, long offset, byte expect, byte update);
 
     /*
      * data has to be 32 bytes long and first 16 bytes is expect next 16 bytes is update.
      */
-    static native long cmpxchg16b(long device, long offset, byte[] data);
+    static native long compareAndSet(long device, long offset, byte[] data);
+
 }

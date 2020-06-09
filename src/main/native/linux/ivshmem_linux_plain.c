@@ -43,7 +43,7 @@ struct mapped_file {
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory_createOrOpenFile
   (JNIEnv *env, jclass clazz, jstring aPath, jlong aPreferedSize, jlongArray aResult) {
-	if (aResult == NULL || aPreferedSize <= 0 || aPath == NULL || (*env)->GetStringLength(env, aPath) <= 0 || (*env) ->GetArrayLength(env, aResult) != 2) {
+	if (aResult == NULL || aPreferedSize < 0 || aPath == NULL || (*env)->GetStringLength(env, aPath) <= 0 || (*env) ->GetArrayLength(env, aResult) != 2) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
 	}
 
@@ -67,12 +67,22 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
 	memcpy(&buf[0], tempChars, tempLen+1);
 	(*env)->ReleaseStringUTFChars(env, aPath, tempChars);
 
+	int tempFlags = O_RDWR;
+	if (aPreferedSize != 0) {
+		tempFlags |= O_CREAT;
+	}
+
 	//permission 777
-	tempMap->fd = open(buf, O_RDWR | O_CREAT, S_IRWXO | S_IRWXG | S_IRWXU);
+	tempMap->fd = open(buf, tempFlags, S_IRWXO | S_IRWXG | S_IRWXU);
 
 	if (tempMap->fd == -1) {
+		int tempErr = errno;
 		free(tempMap);
-		return combineErrorCode(RES_OPEN_FAILURE, errno);
+		if (aPreferedSize == 0 && tempErr == ENOENT) {
+			return combineErrorCode(RES_FILE_DOES_NOT_EXIST, tempErr);
+		}
+
+		return combineErrorCode(RES_OPEN_FAILURE, tempErr);
 	}
 
 	struct stat tempStat;
@@ -85,22 +95,23 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
 		return combineErrorCode(RES_ERROR_SHMEM_FSTAT, err);
 	}
 
-	tempMap->map.size = aPreferedSize;
-	if (tempStat.st_size != 0) {
+
+	if (tempStat.st_size != 0 || aPreferedSize == 0) {
 		tempMap->map.size = tempStat.st_size;
 	} else {
+		tempMap->map.size = aPreferedSize;
 		if (tempMap->map.size > 1 && lseek(tempMap->fd, tempMap->map.size-1, SEEK_SET) == -1) {
 			int err = errno;
 			close(tempMap->fd);
 			free(tempMap);
-			return combineErrorCode(RES_ERROR, err);
+			return combineErrorCode(RES_ERROR_SHMEM_FILE_SET_SIZE, err);
 		}
 
 		if (write(tempMap->fd, "", 1) != 1) {
 			int err = errno;
 			close(tempMap->fd);
 			free(tempMap);
-			return combineErrorCode(RES_ERROR, err);
+			return combineErrorCode(RES_ERROR_SHMEM_FILE_SET_SIZE, err);
 		}
 	}
 

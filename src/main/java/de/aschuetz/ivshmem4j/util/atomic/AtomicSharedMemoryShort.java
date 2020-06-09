@@ -108,7 +108,7 @@ public class AtomicSharedMemoryShort extends AbstractAtomicSharedMemoryNumber {
 
     public boolean compareAndSwap(short expect, short update) {
         try {
-            return memory.compareAndSwap(address, expect, update);
+            return memory.compareAndSet(address, expect, update);
         } catch (SharedMemoryException e) {
             throw new SharedMemoryRuntimeException(e);
         }

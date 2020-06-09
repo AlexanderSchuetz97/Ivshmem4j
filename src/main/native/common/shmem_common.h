@@ -18,7 +18,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include<stdint.h>
+#include <stdint.h>
 
 #ifndef UTIL_COMMON_H_
 #define UTIL_COMMON_H_
@@ -26,6 +26,7 @@
 struct mapped_shared_memory {
 	void * memory;
 	uint64_t size;
+	bool closed;
 };
 
 #endif /* UTIL_COMMON_H_ */

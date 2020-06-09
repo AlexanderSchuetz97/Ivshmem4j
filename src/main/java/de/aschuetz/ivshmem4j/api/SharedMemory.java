@@ -104,9 +104,9 @@ public interface SharedMemory extends Closeable {
     boolean isClosed();
 
     /*
-     * Sets len bytes to value starting at offset.
+     * Writes len bytes with the given value to the offset.
      */
-    void memset(long offset, byte value, long len) throws SharedMemoryException;
+    void write(long offset, byte value, long len) throws SharedMemoryException;
 
     /**
      * writes len bytes starting from the index bufferOffset from the buffer to the offset address in the shared memory.
@@ -239,34 +239,34 @@ public interface SharedMemory extends Closeable {
      * compares the value at offset with expect if equal sets the value at offset to update and returns true otherwise return false.
      * this operation is atomic.
      */
-    boolean compareAndSwap(long offset, long expect, long update) throws SharedMemoryException;
+    boolean compareAndSet(long offset, long expect, long update) throws SharedMemoryException;
 
     /*
      * compares the value at offset with expect if equal sets the value at offset to update and returns true otherwise return false.
      * this operation is atomic.
      */
-    boolean compareAndSwap(long offset, int expect, int update) throws SharedMemoryException;
+    boolean compareAndSet(long offset, int expect, int update) throws SharedMemoryException;
 
     /*
      * compares the value at offset with expect if equal sets the value at offset to update and returns true otherwise return false.
      * this operation is atomic.
      */
-    boolean compareAndSwap(long offset, short expect, short update) throws SharedMemoryException;
+    boolean compareAndSet(long offset, short expect, short update) throws SharedMemoryException;
 
     /*
      * compares the value at offset with expect if equal sets the value at offset to update and returns true otherwise return false.
      * this operation is atomic.
      */
-    boolean compareAndSwap(long offset, byte expect, byte update) throws SharedMemoryException;
+    boolean compareAndSet(long offset, byte expect, byte update) throws SharedMemoryException;
 
     /*
-     * compares the value of offset with the first 16 bytes of data. if equal set the data at offset to the second 16 bytes of data and return true otherwise return false.
+     * compares the value of offset with the first 16 bytes of data. if equal write the data at offset to the second 16 bytes of data and return true otherwise return false.
      * this operation is atomic. data must be exactly 32 bytes long. CPU Must support CMPXCHG16B (CPU's that can run windows 10 support this).
      */
-    boolean compareAndSwap(long offset, byte[] data) throws SharedMemoryException;
+    boolean compareAndSet(long offset, byte[] data) throws SharedMemoryException;
 
     /*
-     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was set false if the timeout expired.
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
      * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
@@ -274,7 +274,7 @@ public interface SharedMemory extends Closeable {
     boolean spinAndSet(long offset, long expect, long update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
 
     /*
-     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was set false if the timeout expired.
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
      * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
@@ -282,7 +282,7 @@ public interface SharedMemory extends Closeable {
     boolean spinAndSet(long offset, int expect, int update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
 
     /*
-     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was set false if the timeout expired.
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
      * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
@@ -290,7 +290,7 @@ public interface SharedMemory extends Closeable {
     boolean spinAndSet(long offset, short expect, short update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
 
     /*
-     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was set false if the timeout expired.
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
      * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.

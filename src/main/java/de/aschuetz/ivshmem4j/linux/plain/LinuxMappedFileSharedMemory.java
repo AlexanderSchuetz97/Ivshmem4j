@@ -24,6 +24,11 @@ import de.aschuetz.ivshmem4j.api.SharedMemory;
 import de.aschuetz.ivshmem4j.api.SharedMemoryException;
 import de.aschuetz.ivshmem4j.common.AbstractSharedMemory;
 
+/**
+ * Implementation of a Shared Memory which relies on using mmap to map a file.
+ * This can be used on the host to interact with a vm using ivshmem-plain
+ * or on linux guests to interact with the pci device.
+ */
 public class LinuxMappedFileSharedMemory extends AbstractSharedMemory {
 
     private final String path;
@@ -34,7 +39,23 @@ public class LinuxMappedFileSharedMemory extends AbstractSharedMemory {
         nativePointer = aHandle;
     }
 
-    public static SharedMemory create(String aPath, long size) throws SharedMemoryException {
+    /**
+     * Attempts to open a file and map it as shared memory. Will throw a SharedMemoryException if the file doesnt exist.
+     */
+    public static SharedMemory open(String aPath) throws SharedMemoryException {
+        if (aPath == null) {
+            throw new IllegalArgumentException("Path must not be null");
+        }
+
+        long[] tempResult = new long[2];
+        LinuxErrorCodeUtil.checkCodeOK(LinuxSharedMemory.createOrOpenFile(aPath, 0, tempResult));
+        return new LinuxMappedFileSharedMemory(aPath, tempResult[0], tempResult[1]);
+    }
+
+    /**
+     * Attempts to open a file and map it as shared memory. Will attempt to connect a file if it doesnt exist.
+     */
+    public static SharedMemory createOrOpen(String aPath, long size) throws SharedMemoryException {
         if (size <= 0) {
             throw new IllegalArgumentException("Size must be bigger than 0");
         }

@@ -490,10 +490,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xchg
+ * Method:    getAndSet
  * Signature: (JJ[J)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xchg__JJ_3J
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndSet__JJ_3J
 	(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jlongArray aLong) {
 	if (aLong == NULL || (*env)->GetArrayLength(env, aLong) != 1) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
@@ -529,10 +529,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xch
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xchg
+ * Method:    getAndSet
  * Signature: (JJ[I)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xchg__JJ_3I
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndSet__JJ_3I
   (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jintArray aInt) {
 	if (aInt == NULL || (*env)->GetArrayLength(env, aInt) != 1) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
@@ -567,10 +567,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xch
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xchg
+ * Method:    getAndSet
  * Signature: (JJ[S)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xchg__JJ_3S
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndSet__JJ_3S
   (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jshortArray aShort) {
 	if (aShort == NULL || (*env)->GetArrayLength(env, aShort) != 1) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
@@ -606,10 +606,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xch
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xchg
+ * Method:    getAndSet
  * Signature: (JJ[B)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xchg__JJ_3B
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndSet__JJ_3B
   (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jbyteArray aByte) {
 	if (aByte == NULL || (*env)->GetArrayLength(env, aByte) != 1) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
@@ -644,10 +644,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xch
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xadd
+ * Method:    getAndAdd
  * Signature: (JJ[J)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xadd__JJ_3J(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndAdd__JJ_3J(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jlongArray aLong) {
 	if (aLong == NULL || (*env)->GetArrayLength(env, aLong) != 1) {
@@ -681,10 +681,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xad
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xadd
+ * Method:    getAndAdd
  * Signature: (JJ[I)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xadd__JJ_3I(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndAdd__JJ_3I(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jintArray aInt) {
 	if (aInt == NULL || (*env)->GetArrayLength(env, aInt) != 1) {
@@ -717,10 +717,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xad
 }
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xadd
+ * Method:    getAndAdd
  * Signature: (JJ[S)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xadd__JJ_3S(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndAdd__JJ_3S(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jshortArray aShort) {
 	if (aShort == NULL || (*env)->GetArrayLength(env, aShort) != 1) {
@@ -754,10 +754,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xad
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    xadd
+ * Method:    getAndAdd
  * Signature: (JJ[B)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xadd__JJ_3B(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndAdd__JJ_3B(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyteArray aByte) {
 	if (aByte == NULL || (*env)->GetArrayLength(env, aByte) != 1) {
@@ -791,10 +791,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_xad
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    cmpxchg
+ * Method:    compareAndSet
  * Signature: (JJJJ)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmpxchg__JJJJ(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_compareAndSet__JJJJ(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jlong aExpect, jlong aUpdate) {
 	struct mapped_shared_memory *tempConnection =
@@ -820,10 +820,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmp
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    cmpxchg
+ * Method:    compareAndSet
  * Signature: (JJII)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmpxchg__JJII(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_compareAndSet__JJII(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jint aExpect, jint aUpdate) {
 	struct mapped_shared_memory *tempConnection =
@@ -849,10 +849,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmp
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    cmpxchg
+ * Method:    compareAndSet
  * Signature: (JJSS)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmpxchg__JJSS(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_compareAndSet__JJSS(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jshort aExpect, jshort aUpdate) {
 	struct mapped_shared_memory *tempConnection =
@@ -878,10 +878,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmp
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    cmpxchg
+ * Method:    compareAndSet
  * Signature: (JJBB)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmpxchg__JJBB(
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_compareAndSet__JJBB(
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyte aExpect, jbyte aUpdate) {
 	struct mapped_shared_memory *tempConnection =
@@ -907,11 +907,11 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmp
 
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
- * Method:    cmpxchg16b
+ * Method:    compareAndSet
  * Signature: (JJ[B)J
  */
-JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_cmpxchg16b(
-		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_compareAndSet__JJ_3B
+   (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyteArray aData) {
 	if (aData == NULL || (*env)->GetArrayLength(env, aData) != 32) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
@@ -976,6 +976,25 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_mem
 	void *tempTarget = (tempConnection->memory + tempOffset);
 
 	memset(tempTarget, ((unsigned char)aValue), tempLen);
+
+	return combineErrorCode(RES_OK, 0);
+}
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    markClosed
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_markClosed
+  (JNIEnv *env, jclass aClazz, jlong aConnectionPtr) {
+	struct mapped_shared_memory *tempConnection =
+				(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	tempConnection->closed = true;
 
 	return combineErrorCode(RES_OK, 0);
 }

@@ -74,7 +74,7 @@ public class AtomicSharedMemoryBoolean {
 
     public boolean compareAndSwap(boolean expect, boolean update) {
         try {
-            if (!memory.compareAndSwap(address, btn(expect), btn(update))) {
+            if (!memory.compareAndSet(address, btn(expect), btn(update))) {
                 if (expect) {
                     return false;
                 }
@@ -84,7 +84,7 @@ public class AtomicSharedMemoryBoolean {
                     return false;
                 }
 
-                return memory.compareAndSwap(address, tempVal, (byte) 0);
+                return memory.compareAndSet(address, tempVal, (byte) 0);
             }
             return true;
         } catch (SharedMemoryException e) {

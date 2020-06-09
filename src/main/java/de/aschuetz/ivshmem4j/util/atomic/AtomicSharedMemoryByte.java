@@ -109,7 +109,7 @@ public class AtomicSharedMemoryByte extends AbstractAtomicSharedMemoryNumber {
 
     public boolean compareAndSwap(byte expect, byte update) {
         try {
-            return memory.compareAndSwap(address, expect, update);
+            return memory.compareAndSet(address, expect, update);
         } catch (SharedMemoryException e) {
             throw new SharedMemoryRuntimeException(e);
         }

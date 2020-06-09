@@ -105,7 +105,7 @@ public class SharedMemoryLock implements Lock {
     /**
      * Creates a new Shared Memory Lock at the given address. If the aVector parameter is -1 or the memory doesnt support interrupts
      * then this lock will be a pure spin lock otherwise in addition to beeing a spin lock this lock will also use interrupts.
-     * Generally if a SharedMemory supports interrupts then the spin time can be set much high (to avoid wasting cpu time).
+     * Generally if a SharedMemory supports interrupts then the spin time can be write much high (to avoid wasting cpu time).
      * If Interrupts are used then new peers that interacts with this lock should/removed be added via addPeer/removePeer or they
      * will not receive interrupts causing them to react slower.
      */
@@ -182,7 +182,7 @@ public class SharedMemoryLock implements Lock {
 
     private void incrementRecursive() throws SharedMemoryException {
         int tempCount = delegate.getHoldCount();
-        if (!memory.compareAndSwap(address, tempCount - 1, tempCount)) {
+        if (!memory.compareAndSet(address, tempCount - 1, tempCount)) {
             fullyUnlockDelegate();
             throw new SharedMemoryRuntimeException("Memory at address" + address + " is corrupt! This lock is now broken");
         }
@@ -202,13 +202,13 @@ public class SharedMemoryLock implements Lock {
             }
 
             boolean tempInterrupted = false;
-            while (!memory.compareAndSwap(address, 0, 1)) {
+            while (!memory.compareAndSet(address, 0, 1)) {
                 try {
 
                     interruptLock.lock();
                     try {
                         registerISR();
-                        if (memory.compareAndSwap(address, 0, 1)) {
+                        if (memory.compareAndSet(address, 0, 1)) {
                             break;
                         }
                         interruptCondition.await(spinTime, TimeUnit.MILLISECONDS);
@@ -276,7 +276,7 @@ public class SharedMemoryLock implements Lock {
                 return true;
             }
 
-            if (!memory.compareAndSwap(address, 0, 1)) {
+            if (!memory.compareAndSet(address, 0, 1)) {
                 delegate.unlock();
                 return false;
             }
@@ -312,7 +312,7 @@ public class SharedMemoryLock implements Lock {
             long tempTime = TimeUnit.MILLISECONDS.convert(time, unit);
 
             boolean tempInterrupted = false;
-            while (!memory.compareAndSwap(address, 0, 1)) {
+            while (!memory.compareAndSet(address, 0, 1)) {
                 long tempDuration = System.currentTimeMillis() - tempStart;
                 if (tempTime < tempDuration) {
                     delegate.unlock();
@@ -322,7 +322,7 @@ public class SharedMemoryLock implements Lock {
                     interruptLock.lock();
                     try {
                         registerISR();
-                        if (memory.compareAndSwap(address, 0, 1)) {
+                        if (memory.compareAndSet(address, 0, 1)) {
                             break;
                         }
                         interruptCondition.await(Math.min(spinTime, (tempTime - tempDuration)), TimeUnit.MILLISECONDS);

@@ -101,7 +101,7 @@ public class AtomicSharedMemoryLong extends AbstractAtomicSharedMemoryNumber {
 
     public boolean compareAndSwap(long expect, long update) {
         try {
-            return memory.compareAndSwap(address, expect, update);
+            return memory.compareAndSet(address, expect, update);
         } catch (SharedMemoryException e) {
             throw new SharedMemoryRuntimeException(e);
         }

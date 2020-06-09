@@ -47,7 +47,7 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
      * Create a new {@link IvshmemLinuxClient} that will connect to a AF_UNIX Socket (Unix Domain Socket)
      * character device at the given path expecting to find a IVSHMEM-SERVER there.
      */
-    public static SharedMemory create(String aPath) throws SharedMemoryException {
+    public static SharedMemory connect(String aPath) throws SharedMemoryException {
         long[] tempResult = new long[4];
         long tempCode = LinuxSharedMemory.openDevice(aPath, tempResult);
         checkCodeOK(tempCode);

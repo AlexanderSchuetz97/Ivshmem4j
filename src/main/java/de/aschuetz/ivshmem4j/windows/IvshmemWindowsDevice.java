@@ -30,7 +30,7 @@ import java.util.Collection;
  * You may connect multiple ivshmem devices to your windows vm.
  * This class can be used to identify the individual pci devices by enumerating them, getting its name (virtual pci bus-id),
  * aswell as its size. Once you have found the device you wish to open (or perhaps multiple devices)
- * then you may call the open method to create a SharedMemory with that device.
+ * then you may call the open method to createOrOpen a SharedMemory with that device.
  */
 public class IvshmemWindowsDevice {
 

@@ -15,13 +15,18 @@ Ivshmem4j is released under the GNU General Public License Version 3. <br>A copy
 
 The file "mvnw" is part of the maven-wrapper project, released under the Apache License Version 2.<br>
 See https://github.com/takari/maven-wrapper for more information regarding maven-wrapper.
-## Supported Platforms
+## Supported operating systems
 ##### Host:
 * Linux (amd64)
 ##### Guest:
 * Windows (amd64)
+* Linux (amd64)
 
-Support for linux guests is planned but currently not yet implemented.
+##### Limitations of Linux guests:
+Since there is no stable linux kernel module to interact with the emulated ivshmem pci device 
+and since its is not possible to receive interrupts without one interrupts are not supported on Linux guests.
+Writing and bundling a kernel module with Ivshmem4j is out of scope for Ivshemem4j.
+
 ## Building / Installation
 #### Windows:
 Building Ivshmem4j on Windows is currently not possible.
@@ -32,7 +37,7 @@ Requirements:
 * make
 * bash
 * linux amd64 JDK 7 or greater
-* windows amd64 JDK 7 or greater (only for headers)
+* Windows amd64 JDK 7 or greater (only for headers)
 
 JDK 7 (Oracle), 8 (OpenJDK) and 11 (OpenJDK) were tested.
 
@@ -42,13 +47,13 @@ sudo apt-get install build-essential gcc-mingw-w64 openjdk-8-jdk
 ````
 Adjust for desired JDK version.
 
-To get the Windows JDK either copy the JDK home directory from a windows installation or use other means 
-(such as msiextract or unzip) to extract the JDK home directory from a windows setup file.
+To get the Windows JDK either copy the JDK home directory from a Windows installation or use other means 
+(such as msiextract or unzip) to extract the JDK home directory from a Windows setup file.
 
-It is not required to run anything using the windows JDK. The only relevant files for Ivshmem4j 
+It is not required to run anything using the Windows JDK. The only relevant files for Ivshmem4j 
 are inside the "include" folder. 
-It is recommended but not required to use the same JDK version for windows and linux because the 
-JNI headers for windows are generated using the linux JDK's javah command to avoid having to run a windows binary.
+It is recommended but not required to use the same JDK version for Windows and linux because the 
+JNI headers for Windows are generated using the linux JDK's javah command to avoid having to run a Windows binary.
 
 Building:
 * clone the git repository
@@ -56,7 +61,7 @@ Building:
 ````
 bash compile_native.sh
 ````
-* edit the newly created config.sh file and enter the paths for your windows JDK home and linux JDK home.
+* edit the newly created config.sh file and enter the paths for your Windows JDK home and linux JDK home.
 * run: 
 ````
 ./mvnw -Dmaven.test.skip=true clean package
@@ -66,14 +71,20 @@ To install Ivshmem4j to a local maven repository you may instead/additionally ru
 ````
 ./mvnw -Dmaven.test.skip=true clean install
 ````
-## Runtime Dependencies
-Windows:
+## Runtime dependencies
+##### Windows guest
 * Ivshmem device driver which is contained in the virtio driver
 https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/upstream-virtio/
 (Use version 0.1-161 or later)
 
-Linux:
-* No dependencies required
+##### Linux host
+* ivshmem-plain
+    * No dependencies required.
+* ivshmem-doorbell
+    * Ivshmem-server (should come bundled with QEMU)
+
+##### Linux guest
+* No dependencies required.
 ## How to use Ivshmem4j
 ##### Common (loading native libraries):
 ````
@@ -88,17 +99,27 @@ NativeLibraryLoaderHelper.loadNativeLibraries();
 //Create or open a shared memory file at "/dev/shm/test" 
 //Behavior for file descriptors that are not on tempfs/ramfs is undefined as Ivshmem4j never calls msync.
 //QEMU ivshmem-plain uses either /dev/shm or hubgelbtfs (not supported by Ivshmem4j)
-SharedMemory memory = LinuxMappedFileSharedMemory.create("/dev/shm/test", 64);
+SharedMemory memory = LinuxMappedFileSharedMemory.createOrOpen("/dev/shm/test", 64);
 ````
 ##### Linux Host (ivshmem-doorbell):
 ````
 //This requires running a ivshmem-server at "/tmp/test" which is part of the QEMU Project.
 //ivshmem-server should already be installed on your system if you use it to run a QEMU VM.
-SharedMemory tempClient = IvshmemLinuxClient.create("/tmp/test");
+SharedMemory tempClient = IvshmemLinuxClient.connect("/tmp/test");
+````
+##### Linux Guest (ivshmem-plain and "ivshmem-doorbell"):
+See Limitations of Linux guests.
+````
+// Opens the PCI device file descriptor of the device at bus id 0000:00:0e.0.
+// The Bus ID is configured in QEMU at the host and may be retrieved by parsing the output of lspci and looking for
+// Red Hat, Inc. Inter-VM shared memory (rev 01).
+// Example Output line from lspci:
+// 00:0e.0 RAM memory: Red Hat, Inc. Inter-VM shared memory (rev 01)
+SharedMemory memory = LinuxMappedFileSharedMemory.open("/sys/bus/pci/devices/0000:00:0e.0/resource2_wc");
 ````
 ##### Windows (ivshmem-plain and ivshmem-doorbell):
 ````
-//Enumerates all windows Ivshmem devices. QEMU supports multiple shared memories per virtual machine.
+//Enumerates all Windows Ivshmem devices. QEMU supports multiple shared memories per virtual machine.
 Collection<IvshmemWindowsDevice> devices = IvshmemWindowsDevice.getSharedMemoryDevices();
 
 SharedMemory memory = null;
@@ -122,7 +143,7 @@ for (IvshmemWindowsDevice device : devices) {
 Writing:
 ````
 //Set the entire shared memory to 0.
-memory.memset(0, (byte)0, memory.getSharedMemorySize());
+memory.write(0, (byte)0, memory.getSharedMemorySize());
 //Write "Hello World!" to the start of the shared memory.
 memory.write(0, "Hello World!".getBytes());
 

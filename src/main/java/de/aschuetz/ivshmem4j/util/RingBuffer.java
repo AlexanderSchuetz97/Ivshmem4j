@@ -283,12 +283,12 @@ public class RingBuffer implements Closeable {
     }
 
     /**
-     * Will set the memory area to Zero.
-     * Should only be called by the Application that is going to create the
+     * Will write the memory area to Zero.
+     * Should only be called by the Application that is going to createOrOpen the
      * Output Stream and only when its certain that there is no longer an Active RingBuffer at the address.
      */
     public void cleanMemoryArea() throws IOException {
-        memory.memset(address, (byte) 0, OVERHEAD);
+        memory.write(address, (byte) 0, OVERHEAD);
     }
 
     /**
@@ -345,7 +345,7 @@ public class RingBuffer implements Closeable {
             throw new IllegalStateException("Cannot call this method while reading!");
         }
 
-        if (!memory.compareAndSwap(address + WRITE_INDEX_OFFSET, localIndex, aNewIndex)) {
+        if (!memory.compareAndSet(address + WRITE_INDEX_OFFSET, localIndex, aNewIndex)) {
             close();
             throw new SharedMemoryException("Write index was modified externally!");
         }
@@ -379,7 +379,7 @@ public class RingBuffer implements Closeable {
             throw new IllegalStateException("Cannot call this method while writing!");
         }
 
-        if (!memory.compareAndSwap(address + READ_INDEX_OFFSET, localIndex, aNewIndex)) {
+        if (!memory.compareAndSet(address + READ_INDEX_OFFSET, localIndex, aNewIndex)) {
             close();
             throw new SharedMemoryException("Read index was modified externally!");
         }
@@ -407,7 +407,7 @@ public class RingBuffer implements Closeable {
 
     protected boolean setState(byte expect, byte newstate) {
         try {
-            return memory.compareAndSwap(STATE_OFFSET + address, expect, newstate);
+            return memory.compareAndSet(STATE_OFFSET + address, expect, newstate);
         } catch (SharedMemoryException e) {
             return false;
         }
@@ -430,7 +430,7 @@ public class RingBuffer implements Closeable {
     }
 
     /**
-     * Returns true if we are able to create a OutputStream.
+     * Returns true if we are able to createOrOpen a OutputStream.
      */
     public boolean canConnectOutputStream() throws SharedMemoryException {
         if (isClosed()) {
@@ -449,7 +449,7 @@ public class RingBuffer implements Closeable {
     }
 
     /**
-     * Returns true if we are able to create a input stream without blocking.
+     * Returns true if we are able to createOrOpen a input stream without blocking.
      */
     public boolean canConnectInputStream() throws SharedMemoryException {
         if (closedFlag) {
@@ -497,7 +497,7 @@ public class RingBuffer implements Closeable {
     }
 
     /**
-     * Will attempt to create and connect the output stream using spinning.
+     * Will attempt to createOrOpen and connect the output stream using spinning.
      * Keep in mind that this output stream can be interrupted during writing by calling Thread.interrupt().
      * If this is done then partial data may be truncated. The amount of bytes truncated can be retrieved from the
      * RingBufferInterruptedException that is thrown when an interrupt occurs.
@@ -505,7 +505,7 @@ public class RingBuffer implements Closeable {
      * @param aBufferSize the size of the buffer in bytes. (Note: this must include OVERHEAD)
      * @param aTimeout    the connect timeout in which a input stream must be created to connect to this output stream. If it expires a SharedMemoryException will be thrown.
      * @param aSpinTime   during the connection process this thread will spin.
-     *                    If this value is set to a low value then the output stream may connect faster but it will also tax the CPU more during the connection process.
+     *                    If this value is write to a low value then the output stream may connect faster but it will also tax the CPU more during the connection process.
      *                    This value should be at least 10 times smaller than your timeout. It is only used during the connecting and has no effect after the connection was established.
      * @return the Output Stream.
      * @throws SharedMemoryException if an error/timeout occurs.
@@ -531,7 +531,7 @@ public class RingBuffer implements Closeable {
     }
 
     /**
-     * Will attempt to create and connect the output stream using interrupts (if the other side supports this).
+     * Will attempt to createOrOpen and connect the output stream using interrupts (if the other side supports this).
      * Keep in mind that this output stream can be interrupted during writing by calling Thread.interrupt().
      * If this is done then partial data may be truncated. The amount of bytes truncated can be retrieved from the
      * RingBufferInterruptedException that is thrown when an interrupt occurs.
@@ -540,7 +540,7 @@ public class RingBuffer implements Closeable {
      * @param aBufferSize the size of the buffer in bytes. (Note: this must include OVERHEAD)
      * @param aTimeout    the connect timeout in which a input stream must be created to connect to this output stream. If it expires a SharedMemoryException will be thrown.
      * @param aSpinTime   during the connection process this thread will spin.
-     *                    If this value is set to a low value then the output stream may connect faster but it will also tax the CPU more during the connection process.
+     *                    If this value is write to a low value then the output stream may connect faster but it will also tax the CPU more during the connection process.
      *                    This value should be at least 10 times smaller than your timeout. It is only used during the connecting and has no effect after the connection was established.
      * @return the Output Stream.
      * @throws SharedMemoryException if an error/timeout occurs.
@@ -684,7 +684,7 @@ public class RingBuffer implements Closeable {
      *
      * @param aTimeout  timeout before throwing a Shared Memory Exception
      * @param aSpinTime during the connection process this thread will spin.
-     *                  If this value is set to a low value then the output stream may connect faster but it will also tax the CPU more during the connection process.
+     *                  If this value is write to a low value then the output stream may connect faster but it will also tax the CPU more during the connection process.
      *                  This value should be at least 10 times smaller than your timeout.
      * @return the connected InputStream that can be read from.
      * @throws SharedMemoryException
@@ -1051,8 +1051,8 @@ public class RingBuffer implements Closeable {
 
                 if (timeout >= 0) {
                     if (len >= size) {
-                        throw new IOException("You have set a timeout, to avoid having to do partial writes the entire write operation has to fit into the ring buffer at once. " +
-                                "You intend to write " + len + " bytes but the ring buffer is only " + size + " bytes big. (1 byte is reserved) If you wish to enable partial writes dont set a timeout.");
+                        throw new IOException("You have write a timeout, to avoid having to do partial writes the entire write operation has to fit into the ring buffer at once. " +
+                                "You intend to write " + len + " bytes but the ring buffer is only " + size + " bytes big. (1 byte is reserved) If you wish to enable partial writes dont write a timeout.");
                     }
                     waitForWritableBytes(len, false);
                 }

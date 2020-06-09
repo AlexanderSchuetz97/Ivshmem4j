@@ -137,7 +137,7 @@ public class NativeLibraryLoaderHelper {
         }
 
         if (!tempLibFile.createNewFile()) {
-            throw new IOException("Could not create temporary library file!");
+            throw new IOException("Could not createOrOpen temporary library file!");
         }
 
         tempLibFile.deleteOnExit();

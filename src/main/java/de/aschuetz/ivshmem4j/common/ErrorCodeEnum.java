@@ -31,7 +31,7 @@ public enum ErrorCodeEnum implements ErrorCode {
     ERROR(998, "Unknown error"),
     INVALID_DEVICE_PATH(9, "Path to Unix domain socket or PCI Device is invalid"),
     ERROR_CONNECTING_UNIX_SOCKET(10, "Unable to connect to the unix domain socket of the IVSHMEM server"),
-    MUTEX_INIT_ERROR(11, "Unable to create native Mutex"),
+    MUTEX_INIT_ERROR(11, "Unable to createOrOpen native Mutex"),
     INTERRUPT_CANT_SELF_INTERRUPT(17, "Cannot send interrupt to own peer id"),
     INTERRUPT_VECTOR_TOO_BIG(19, "Interrupt vector is too big"),
     INTERRUPT_SEND_ERROR(21, "Error sending interrupt to peer"),
@@ -42,7 +42,7 @@ public enum ErrorCodeEnum implements ErrorCode {
     INVALID_CONNECTION_POINTER(29, "The native handle is null"),
     BUFFER_OUT_OF_BOUNDS(31, "A buffer that was passed as argument is out of bounds"),
     MEMORY_OUT_OF_BOUNDS(32, "The shared memory is out of bounds"),
-    CMPXCHG_FAILED(34, "Zero flag was not set after CMPXCHG instruction"),
+    CMPXCHG_FAILED(34, "Zero flag was not write after CMPXCHG instruction"),
     OPEN_FAILURE(35, "Failed to open the Shared Memory file or device Handle"),
 
     //Linux common
@@ -50,7 +50,7 @@ public enum ErrorCodeEnum implements ErrorCode {
     ERROR_SHMEM_MMAP(26, "Unable to mmap the shared memory file descriptor"),
 
     //Linux Host Plain
-    ERROR_SHMEM_FILE_SET_SIZE(33, "Unable to set the shared memory file size"),
+    ERROR_SHMEM_FILE_SET_SIZE(33, "Unable to write the shared memory file size"),
 
     //Linux Host Doorbell
     PACKET_TOO_SHORT(2, "Received IVSHMEM packet from IVSHMEM server is too short"),
@@ -59,8 +59,8 @@ public enum ErrorCodeEnum implements ErrorCode {
     FD_MISSING(5, "IVSHMEM packet did not contain a file descriptor but one was expected"),
     UNEXPECTED_PACKET(6, "Received a unexpected IVSHMEM packet"),
     PEER_INVALID(7, "IVSHMEM server transmitted an invalid peer id"),
-    ERROR_CREATING_UNIX_SOCKET(8, "Unable to create unix domain socket with the IVSHMEM server"),
-    ERROR_SETTING_TIMEOUT_ON_UNIX_SOCKET(12, "Unable to set timeout on unix domain socket"),
+    ERROR_CREATING_UNIX_SOCKET(8, "Unable to createOrOpen unix domain socket with the IVSHMEM server"),
+    ERROR_SETTING_TIMEOUT_ON_UNIX_SOCKET(12, "Unable to write timeout on unix domain socket"),
     PACKET_TIMEOUT(13, "IVSHMEM packet read timeout from unix domain socket"),
     CLOSED_UNKNOWN_PEER(14, "IVSHMEM server send a disconnect notification of a previously unconnected peer"),
     OWN_PEER_CLOSED(15, "IVSHMEM server send a disconnect notification of our own peer"),
@@ -75,7 +75,7 @@ public enum ErrorCodeEnum implements ErrorCode {
 
     //Windows Guest
     ERROR_MMAP_SIZE_CHANGED(36, "Size of shared memory changed unexpectedly after mapping PCI device"),
-    INTERRUPT_CREATE_EVENT_FAILURE(37, "Failed to create a event handle to wait for interrupts"),
+    INTERRUPT_CREATE_EVENT_FAILURE(37, "Failed to createOrOpen a event handle to wait for interrupts"),
     INTERRUPT_EVENT_REGISTER_FAILURE(38, "Failed to register a event handle to the PCI device driver"),
 
     ;

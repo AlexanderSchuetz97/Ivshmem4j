@@ -69,8 +69,8 @@ public class RingBufferTest {
         if (shmemfile.exists()) {
             shmemfile.delete();
         }
-        memoryInput = LinuxMappedFileSharedMemory.create(shmemfile.getAbsolutePath(), 4096);
-        memoryOutput = LinuxMappedFileSharedMemory.create(shmemfile.getAbsolutePath(), 4096);
+        memoryInput = LinuxMappedFileSharedMemory.createOrOpen(shmemfile.getAbsolutePath(), 4096);
+        memoryOutput = LinuxMappedFileSharedMemory.createOrOpen(shmemfile.getAbsolutePath(), 4096);
         shmemfile.deleteOnExit();
         rng.setSeed(0);
 

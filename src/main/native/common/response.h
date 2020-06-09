@@ -51,6 +51,7 @@
 
 //Linux plain
 #define RES_ERROR_SHMEM_FILE_SET_SIZE 33
+#define RES_FILE_DOES_NOT_EXIST 42
 
 //Linux doorbell
 #define RES_PACKET_TOO_SHORT 2

@@ -222,7 +222,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
     }
 
     @Override
-    public void memset(long offset, byte value, long len) throws SharedMemoryException {
+    public void write(long offset, byte value, long len) throws SharedMemoryException {
         checkCodeOK(CommonSharedMemory.memset(nativePointer, offset, value, len));
     }
 
@@ -391,56 +391,56 @@ public abstract class AbstractSharedMemory implements SharedMemory {
     @Override
     public long getAndAdd(long offset, long aLong) throws SharedMemoryException {
         long[] tempParam = {aLong};
-        checkCodeOK(CommonSharedMemory.xadd(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
     @Override
     public int getAndAdd(long offset, int aInt) throws SharedMemoryException {
         int[] tempParam = {aInt};
-        checkCodeOK(CommonSharedMemory.xadd(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
     @Override
     public short getAndAdd(long offset, short aShort) throws SharedMemoryException {
         short[] tempParam = {aShort};
-        checkCodeOK(CommonSharedMemory.xadd(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
     @Override
     public byte getAndAdd(long offset, byte aByte) throws SharedMemoryException {
         byte[] tempParam = {aByte};
-        checkCodeOK(CommonSharedMemory.xadd(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
 
     public long getAndSet(long offset, long aLong) throws SharedMemoryException {
         long[] tempParam = {aLong};
-        checkCodeOK(CommonSharedMemory.xchg(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
     @Override
     public int getAndSet(long offset, int aInt) throws SharedMemoryException {
         int[] tempParam = {aInt};
-        checkCodeOK(CommonSharedMemory.xchg(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
     @Override
     public short getAndSet(long offset, short aShort) throws SharedMemoryException {
         short[] tempParam = {aShort};
-        checkCodeOK(CommonSharedMemory.xchg(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
     @Override
     public byte getAndSet(long offset, byte aByte) throws SharedMemoryException {
         byte[] tempParam = {aByte};
-        checkCodeOK(CommonSharedMemory.xchg(nativePointer, offset, tempParam));
+        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
         return tempParam[0];
     }
 
@@ -451,7 +451,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
         long tempUntil = System.nanoTime() + tempTimeout;
         boolean tempWasInterrupted = false;
         do {
-            if (compareAndSwap(offset, expect, update)) {
+            if (compareAndSet(offset, expect, update)) {
                 if (tempWasInterrupted) {
                     Thread.currentThread().interrupt();
                 }
@@ -479,7 +479,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
         long tempUntil = System.nanoTime() + tempTimeout;
         boolean tempWasInterrupted = false;
         do {
-            if (compareAndSwap(offset, expect, update)) {
+            if (compareAndSet(offset, expect, update)) {
                 if (tempWasInterrupted) {
                     Thread.currentThread().interrupt();
                 }
@@ -507,7 +507,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
         long tempUntil = System.nanoTime() + tempTimeout;
         boolean tempWasInterrupted = false;
         do {
-            if (compareAndSwap(offset, expect, update)) {
+            if (compareAndSet(offset, expect, update)) {
                 if (tempWasInterrupted) {
                     Thread.currentThread().interrupt();
                 }
@@ -535,7 +535,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
         long tempUntil = System.nanoTime() + tempTimeout;
         boolean tempWasInterrupted = false;
         do {
-            if (compareAndSwap(offset, expect, update)) {
+            if (compareAndSet(offset, expect, update)) {
                 if (tempWasInterrupted) {
                     Thread.currentThread().interrupt();
                 }
@@ -557,28 +557,28 @@ public abstract class AbstractSharedMemory implements SharedMemory {
     }
 
     @Override
-    public boolean compareAndSwap(long offset, long expect, long update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.cmpxchg(nativePointer, offset, expect, update));
+    public boolean compareAndSet(long offset, long expect, long update) throws SharedMemoryException {
+        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
     }
 
     @Override
-    public boolean compareAndSwap(long offset, int expect, int update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.cmpxchg(nativePointer, offset, expect, update));
+    public boolean compareAndSet(long offset, int expect, int update) throws SharedMemoryException {
+        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
     }
 
     @Override
-    public boolean compareAndSwap(long offset, short expect, short update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.cmpxchg(nativePointer, offset, expect, update));
+    public boolean compareAndSet(long offset, short expect, short update) throws SharedMemoryException {
+        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
     }
 
     @Override
-    public boolean compareAndSwap(long offset, byte expect, byte update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.cmpxchg(nativePointer, offset, expect, update));
+    public boolean compareAndSet(long offset, byte expect, byte update) throws SharedMemoryException {
+        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
     }
 
     @Override
-    public boolean compareAndSwap(long offset, byte[] data) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.cmpxchg16b(nativePointer, offset, data));
+    public boolean compareAndSet(long offset, byte[] data) throws SharedMemoryException {
+        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, data));
     }
 
     @Override

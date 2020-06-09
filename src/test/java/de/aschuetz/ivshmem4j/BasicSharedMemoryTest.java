@@ -54,7 +54,7 @@ public class BasicSharedMemoryTest {
         if (shmemfile.exists()) {
             shmemfile.delete();
         }
-        memory = LinuxMappedFileSharedMemory.create(shmemfile.getAbsolutePath(), 4096);
+        memory = LinuxMappedFileSharedMemory.createOrOpen(shmemfile.getAbsolutePath(), 4096);
         shmemfile.deleteOnExit();
         rng.setSeed(0);
 
@@ -231,8 +231,8 @@ public class BasicSharedMemoryTest {
     public void cmpxchg1b() throws Throwable {
         for (long i = 0; i < memory.getSharedMemorySize(); i++) {
             for (int j = 0; j < 0xff; j++) {
-                Assert.assertTrue(memory.compareAndSwap(i, (byte) j, (byte) (j + 1)));
-                Assert.assertFalse(memory.compareAndSwap(i, (byte) j, (byte) (j + 2)));
+                Assert.assertTrue(memory.compareAndSet(i, (byte) j, (byte) (j + 1)));
+                Assert.assertFalse(memory.compareAndSet(i, (byte) j, (byte) (j + 2)));
             }
         }
     }
@@ -242,8 +242,8 @@ public class BasicSharedMemoryTest {
         for (long i = 0; i + 1 < memory.getSharedMemorySize(); i++) {
             memory.write(i, (short) 0);
             for (int j = 0; j < 0xffff; j++) {
-                Assert.assertTrue(memory.compareAndSwap(i, (short) j, (short) (j + 1)));
-                Assert.assertFalse(memory.compareAndSwap(i, (short) j, (short) (j + 2)));
+                Assert.assertTrue(memory.compareAndSet(i, (short) j, (short) (j + 1)));
+                Assert.assertFalse(memory.compareAndSet(i, (short) j, (short) (j + 2)));
             }
         }
     }
@@ -253,13 +253,13 @@ public class BasicSharedMemoryTest {
         for (long i = 0; i + 3 < memory.getSharedMemorySize(); i++) {
             memory.write(i, 0);
             for (int j = 0; j < 0xffff; j++) {
-                Assert.assertTrue(memory.compareAndSwap(i, j, j + 1));
-                Assert.assertFalse(memory.compareAndSwap(i, j, j + 2));
+                Assert.assertTrue(memory.compareAndSet(i, j, j + 1));
+                Assert.assertFalse(memory.compareAndSet(i, j, j + 2));
 
                 if (j != -j) {
-                    Assert.assertTrue(memory.compareAndSwap(i, j + 1, -j));
-                    Assert.assertFalse(memory.compareAndSwap(i, j, j + 1));
-                    Assert.assertTrue(memory.compareAndSwap(i, -j, j + 1));
+                    Assert.assertTrue(memory.compareAndSet(i, j + 1, -j));
+                    Assert.assertFalse(memory.compareAndSet(i, j, j + 1));
+                    Assert.assertTrue(memory.compareAndSet(i, -j, j + 1));
                 }
             }
         }
@@ -270,13 +270,13 @@ public class BasicSharedMemoryTest {
         for (long i = 0; i + 7 < memory.getSharedMemorySize(); i++) {
             memory.write(i, (long) 0);
             for (long j = 0; j < 0xffff; j++) {
-                Assert.assertTrue(memory.compareAndSwap(i, j, j + 1));
-                Assert.assertFalse(memory.compareAndSwap(i, j, j + 2));
+                Assert.assertTrue(memory.compareAndSet(i, j, j + 1));
+                Assert.assertFalse(memory.compareAndSet(i, j, j + 2));
 
                 if (j != -j) {
-                    Assert.assertTrue(memory.compareAndSwap(i, j + 1, -j));
-                    Assert.assertFalse(memory.compareAndSwap(i, j, j + 1));
-                    Assert.assertTrue(memory.compareAndSwap(i, -j, j + 1));
+                    Assert.assertTrue(memory.compareAndSet(i, j + 1, -j));
+                    Assert.assertFalse(memory.compareAndSet(i, j, j + 1));
+                    Assert.assertTrue(memory.compareAndSet(i, -j, j + 1));
                 }
             }
         }
@@ -598,163 +598,163 @@ public class BasicSharedMemoryTest {
 
         //CMGPXCHG byte
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize(), (byte) 0, (byte) 0);
+            memory.compareAndSet(memory.getSharedMemorySize(), (byte) 0, (byte) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() + 1, (byte) 0, (byte) 0);
+            memory.compareAndSet(memory.getSharedMemorySize() + 1, (byte) 0, (byte) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-64, (byte) 0, (byte) 0);
+            memory.compareAndSet(-64, (byte) 0, (byte) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-1, (byte) 0, (byte) 0);
+            memory.compareAndSet(-1, (byte) 0, (byte) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
-        memory.compareAndSwap(memory.getSharedMemorySize() - 1, (byte) 0, (byte) 0);
+        memory.compareAndSet(memory.getSharedMemorySize() - 1, (byte) 0, (byte) 0);
 
         //CMGPXCHG short
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() - 1, (short) 0, (short) 0);
+            memory.compareAndSet(memory.getSharedMemorySize() - 1, (short) 0, (short) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize(), (short) 0, (short) 0);
+            memory.compareAndSet(memory.getSharedMemorySize(), (short) 0, (short) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() + 1, (short) 0, (short) 0);
+            memory.compareAndSet(memory.getSharedMemorySize() + 1, (short) 0, (short) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-64, (short) 0, (short) 0);
+            memory.compareAndSet(-64, (short) 0, (short) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-1, (short) 0, (short) 0);
+            memory.compareAndSet(-1, (short) 0, (short) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
-        memory.compareAndSwap(memory.getSharedMemorySize() - 2, (short) 0, (short) 0);
+        memory.compareAndSet(memory.getSharedMemorySize() - 2, (short) 0, (short) 0);
 
         //CMGPXCHG int
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() - 3, 0, 0);
+            memory.compareAndSet(memory.getSharedMemorySize() - 3, 0, 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize(), 0, 0);
+            memory.compareAndSet(memory.getSharedMemorySize(), 0, 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() + 1, 0, 0);
+            memory.compareAndSet(memory.getSharedMemorySize() + 1, 0, 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-64, 0, 0);
+            memory.compareAndSet(-64, 0, 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-1, 0, 0);
+            memory.compareAndSet(-1, 0, 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
-        memory.compareAndSwap(memory.getSharedMemorySize() - 4, 0, 0);
+        memory.compareAndSet(memory.getSharedMemorySize() - 4, 0, 0);
 
         //CMGPXCHG long
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() - 7, (long) 0, (long) 0);
+            memory.compareAndSet(memory.getSharedMemorySize() - 7, (long) 0, (long) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize(), (long) 0, (long) 0);
+            memory.compareAndSet(memory.getSharedMemorySize(), (long) 0, (long) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() + 1, (long) 0, (long) 0);
+            memory.compareAndSet(memory.getSharedMemorySize() + 1, (long) 0, (long) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-64, (long) 0, (long) 0);
+            memory.compareAndSet(-64, (long) 0, (long) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-1, (long) 0, (long) 0);
+            memory.compareAndSet(-1, (long) 0, (long) 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
-        memory.compareAndSwap(memory.getSharedMemorySize() - 8, (long) 0, (long) 0);
+        memory.compareAndSet(memory.getSharedMemorySize() - 8, (long) 0, (long) 0);
 
         //CMPXCHG16B
         byte[] tempBuf = new byte[32];
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() - 15, tempBuf);
+            memory.compareAndSet(memory.getSharedMemorySize() - 15, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize(), tempBuf);
+            memory.compareAndSet(memory.getSharedMemorySize(), tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(memory.getSharedMemorySize() + 1, tempBuf);
+            memory.compareAndSet(memory.getSharedMemorySize() + 1, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-64, tempBuf);
+            memory.compareAndSet(-64, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
         try {
-            memory.compareAndSwap(-7, tempBuf);
+            memory.compareAndSet(-7, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
         }
-        memory.compareAndSwap(memory.getSharedMemorySize() - 16, tempBuf);
+        memory.compareAndSet(memory.getSharedMemorySize() - 16, tempBuf);
     }
 
     @Test
@@ -916,7 +916,7 @@ public class BasicSharedMemoryTest {
                 memory.write(l + i, (byte) (tempVal - 2));
             }
 
-            memory.memset(l, tempVal, tempLen);
+            memory.write(l, tempVal, tempLen);
 
             if (memory.isAddressValid(l - 1)) {
                 Assert.assertEquals((byte) (tempVal - 1), memory.read(l - 1));
@@ -933,18 +933,18 @@ public class BasicSharedMemoryTest {
             }
 
             memory.write(l, (byte) 2);
-            memory.memset(l, (byte) 1, 0);
+            memory.write(l, (byte) 1, 0);
             Assert.assertEquals((byte) 2, memory.read(l));
 
             try {
-                memory.memset(l, (byte) 0, (memory.getSharedMemorySize() - l) + 1);
+                memory.write(l, (byte) 0, (memory.getSharedMemorySize() - l) + 1);
                 Assert.fail();
             } catch (SharedMemoryException exc) {
                 Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
             }
 
             try {
-                memory.memset(l, (byte) 0, -1);
+                memory.write(l, (byte) 0, -1);
                 Assert.fail();
             } catch (SharedMemoryException exc) {
                 Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
@@ -952,10 +952,10 @@ public class BasicSharedMemoryTest {
 
         }
 
-        memory.memset(memory.getSharedMemorySize() - 1, (byte) 0, 1);
+        memory.write(memory.getSharedMemorySize() - 1, (byte) 0, 1);
 
         try {
-            memory.memset(memory.getSharedMemorySize(), (byte) 0, 1);
+            memory.write(memory.getSharedMemorySize(), (byte) 0, 1);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
@@ -963,7 +963,7 @@ public class BasicSharedMemoryTest {
 
 
         try {
-            memory.memset(memory.getSharedMemorySize(), (byte) 0, -1);
+            memory.write(memory.getSharedMemorySize(), (byte) 0, -1);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
@@ -971,7 +971,7 @@ public class BasicSharedMemoryTest {
 
 
         try {
-            memory.memset(memory.getSharedMemorySize() + 5, (byte) 0, -8);
+            memory.write(memory.getSharedMemorySize() + 5, (byte) 0, -8);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
@@ -979,7 +979,7 @@ public class BasicSharedMemoryTest {
 
 
         try {
-            memory.memset(memory.getSharedMemorySize() + 5, (byte) 0, 1);
+            memory.write(memory.getSharedMemorySize() + 5, (byte) 0, 1);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
@@ -987,7 +987,7 @@ public class BasicSharedMemoryTest {
 
 
         try {
-            memory.memset(memory.getSharedMemorySize(), (byte) 0, 0);
+            memory.write(memory.getSharedMemorySize(), (byte) 0, 0);
             Assert.fail();
         } catch (SharedMemoryException exc) {
             Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());

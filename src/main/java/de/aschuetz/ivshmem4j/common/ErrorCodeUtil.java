@@ -22,12 +22,15 @@ package de.aschuetz.ivshmem4j.common;
 
 import de.aschuetz.ivshmem4j.api.SharedMemoryException;
 
-public class CommonErrorCodeUtil {
+/**
+ * Internal utility for native error codes.
+ */
+public class ErrorCodeUtil {
 
     /**
      * Returns true if CMPXCHG succeed false if it failed throws exception otherwise.
      */
-    protected static boolean checkCodeCMPXCHG(long aCode) throws SharedMemoryException {
+    public static boolean checkCodeCMPXCHG(long aCode) throws SharedMemoryException {
         ErrorCodeEnum tempCode = check(aCode);
         if (tempCode == ErrorCodeEnum.OK) {
             return true;
@@ -43,7 +46,7 @@ public class CommonErrorCodeUtil {
     /**
      * Throws an Exception unless the result is OK.
      */
-    protected static void checkCodeOK(long aCode) throws SharedMemoryException {
+    public static void checkCodeOK(long aCode) throws SharedMemoryException {
         ErrorCodeEnum tempCode = check(aCode);
         if (tempCode != ErrorCodeEnum.OK) {
             throw new SharedMemoryException(tempCode, (int) aCode);
@@ -53,7 +56,7 @@ public class CommonErrorCodeUtil {
     /**
      * Throws an exception if this error cannot be handled.
      */
-    protected static ErrorCodeEnum check(long aCode) throws SharedMemoryException {
+    public static ErrorCodeEnum check(long aCode) throws SharedMemoryException {
         if (aCode == 0) {
             return ErrorCodeEnum.OK;
         }
@@ -77,5 +80,37 @@ public class CommonErrorCodeUtil {
             default:
                 throw new SharedMemoryException(tempCode, tempSysCode);
         }
+    }
+
+    /**
+     * Returns true if the native code returned due to timeout.
+     */
+    public static boolean checkCodePollInterrupt(long aCode) throws SharedMemoryException {
+        ErrorCodeEnum tempCode = check(aCode);
+        if (tempCode == ErrorCodeEnum.OK) {
+            return false;
+        }
+
+        if (tempCode == ErrorCodeEnum.INTERRUPT_TIMEOUT) {
+            return true;
+        }
+
+        throw new SharedMemoryException(tempCode, (int) aCode);
+    }
+
+    /**
+     * Returns true if the native code returned due to timeout.
+     */
+    public static boolean checkCodePollServer(long aCode) throws SharedMemoryException {
+        ErrorCodeEnum tempCode = check(aCode);
+        if (tempCode == ErrorCodeEnum.OK) {
+            return false;
+        }
+
+        if (tempCode == ErrorCodeEnum.POLL_SERVER_TIMEOUT) {
+            return true;
+        }
+
+        throw new SharedMemoryException(tempCode, (int) aCode);
     }
 }

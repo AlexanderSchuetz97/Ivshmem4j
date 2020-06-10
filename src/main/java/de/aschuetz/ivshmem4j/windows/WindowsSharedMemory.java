@@ -20,9 +20,20 @@
 
 package de.aschuetz.ivshmem4j.windows;
 
+/**
+ * JNI Internal.
+ */
 class WindowsSharedMemory {
 
-    static native Object[] getDevices();
+    /**
+     * Enumerates the devices.
+     * result "array" must be 1 in size.
+     * first element will be filled with a Object Array that contains n*2 elements.
+     * n specifies the amount of connected devices.
+     * element n contains long[] size 1 which contains the size of the device.
+     * element n+1 contains byte[] which contains the device name (usually zero byte terminated string).
+     */
+    static native long getDevices(Object[] result);
 
     static native long openDevice(byte[] device, long[] handle);
 

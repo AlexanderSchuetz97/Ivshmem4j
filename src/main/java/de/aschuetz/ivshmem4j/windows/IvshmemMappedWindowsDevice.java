@@ -23,6 +23,9 @@ package de.aschuetz.ivshmem4j.windows;
 import de.aschuetz.ivshmem4j.api.SharedMemoryException;
 import de.aschuetz.ivshmem4j.common.AbstractSharedMemoryWithInterrupts;
 
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeOK;
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodePollInterrupt;
+
 
 /**
  * Windows PCI Device impl of Shared Memory.
@@ -47,7 +50,7 @@ public class IvshmemMappedWindowsDevice extends AbstractSharedMemoryWithInterrup
         checkInterruptSupport();
         readLock.lock();
         try {
-            WindowsErrorCodeUtil.checkCodeOK(WindowsSharedMemory.sendInterrupt(nativePointer, aVector, aPeer));
+            checkCodeOK(WindowsSharedMemory.sendInterrupt(nativePointer, aVector, aPeer));
         } finally {
             readLock.unlock();
         }
@@ -55,7 +58,7 @@ public class IvshmemMappedWindowsDevice extends AbstractSharedMemoryWithInterrup
 
     @Override
     protected boolean pollInterrupt0(int[] buffer) throws SharedMemoryException {
-        return WindowsErrorCodeUtil.checkCodePollInterrupt(WindowsSharedMemory.pollInterrupt(nativePointer, buffer));
+        return checkCodePollInterrupt(WindowsSharedMemory.pollInterrupt(nativePointer, buffer));
     }
 
     @Override

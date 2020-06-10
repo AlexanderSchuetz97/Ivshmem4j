@@ -24,6 +24,8 @@ import de.aschuetz.ivshmem4j.api.SharedMemory;
 import de.aschuetz.ivshmem4j.api.SharedMemoryException;
 import de.aschuetz.ivshmem4j.common.AbstractSharedMemory;
 
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeOK;
+
 /**
  * Implementation of a Shared Memory which relies on using mmap to map a file.
  * This can be used on the host to interact with a vm using ivshmem-plain
@@ -48,12 +50,14 @@ public class LinuxMappedFileSharedMemory extends AbstractSharedMemory {
         }
 
         long[] tempResult = new long[2];
-        LinuxErrorCodeUtil.checkCodeOK(LinuxSharedMemory.createOrOpenFile(aPath, 0, tempResult));
+        checkCodeOK(LinuxSharedMemory.createOrOpenFile(aPath, 0, tempResult));
         return new LinuxMappedFileSharedMemory(aPath, tempResult[0], tempResult[1]);
     }
 
     /**
-     * Attempts to open a file and map it as shared memory. Will attempt to connect a file if it doesnt exist.
+     * Attempts to open a file and map it as shared memory. Will attempt to create a file if it doesnt exist.
+     * The size of the SharedMemory may be different from the specified size.
+     * If the shared memory was already created (i.e. the file already exists) then the existing file size is taken.
      */
     public static SharedMemory createOrOpen(String aPath, long size) throws SharedMemoryException {
         if (size <= 0) {
@@ -65,7 +69,7 @@ public class LinuxMappedFileSharedMemory extends AbstractSharedMemory {
         }
 
         long[] tempResult = new long[2];
-        LinuxErrorCodeUtil.checkCodeOK(LinuxSharedMemory.createOrOpenFile(aPath, size, tempResult));
+        checkCodeOK(LinuxSharedMemory.createOrOpenFile(aPath, size, tempResult));
         return new LinuxMappedFileSharedMemory(aPath, tempResult[0], tempResult[1]);
     }
 

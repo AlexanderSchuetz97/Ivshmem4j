@@ -106,7 +106,7 @@ public interface SharedMemory extends Closeable {
     /*
      * Writes len bytes with the given value to the offset.
      */
-    void write(long offset, byte value, long len) throws SharedMemoryException;
+    void set(long offset, byte value, long len) throws SharedMemoryException;
 
     /**
      * writes len bytes starting from the index bufferOffset from the buffer to the offset address in the shared memory.
@@ -303,7 +303,7 @@ public interface SharedMemory extends Closeable {
      * ivshmem-plain does not support any interrupts whatsoever.
      * ivshmem-doorbell only suports interrupts if you specify at least one vector on the ivshmem-server.
      * <br>
-     * if this method returns false then any other Interrupt releated methods will throw UnsupportedOperation exception.
+     * if this method returns false then any other Interrupt related methods will throw UnsupportedOperation exception.
      */
     boolean supportsInterrupts();
 

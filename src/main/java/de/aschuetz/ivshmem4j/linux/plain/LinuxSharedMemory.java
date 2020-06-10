@@ -20,6 +20,9 @@
 
 package de.aschuetz.ivshmem4j.linux.plain;
 
+/**
+ * JNI internal.
+ */
 class LinuxSharedMemory {
 
     static native long createOrOpenFile(String aPath, long aMinimumSize, long[] aResult);

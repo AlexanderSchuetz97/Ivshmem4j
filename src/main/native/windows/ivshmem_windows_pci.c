@@ -346,7 +346,7 @@ uint64_t mapDevice(struct ivshmem_mapped_device *aMappedDevice,
 	aMappedDevice->mapped.size = aMappedDevice->map.size;
 	aMappedDevice->mapped.memory = aMappedDevice->map.memory;
 
-	return RES_OK;
+	return combineErrorCode(RES_OK, 0);
 }
 
 void closeDevice(struct ivshmem_mapped_device *aMappedDevice) {
@@ -451,17 +451,22 @@ uint64_t pollInterrupt(struct ivshmem_mapped_device *aMappedDevice,
 /*
  * Class:     de_aschuetz_ivshmem4j_windows_WindowsSharedMemory
  * Method:    getDevices
- * Signature: ()[Ljava/lang/Object;
+ * Signature: ([Ljava/lang/Object;)J
  */
-JNIEXPORT jobjectArray JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_getDevices(
-		JNIEnv *env, jclass aClazz) {
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_getDevices
+  (JNIEnv *env, jclass clazz, jobjectArray result) {
+
+	if (result == NULL || (*env)->GetArrayLength(env, result) != 1) {
+		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
+	}
+
 
 	linked_list tempList;
 
 	uint64_t tempRes = getDevices(&tempList);
 
 	if (!checkErrorCode(tempRes, RES_OK)) {
-		return (*env)->NewGlobalRef(env, NULL);
+		return tempRes;
 	}
 
 	uint32_t tempSize = tempList.size;
@@ -470,11 +475,16 @@ JNIEXPORT jobjectArray JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedM
 
 	if (tempObjectClazz == NULL) {
 		linked_list_clear(&tempList, &node_dealloc);
-		return (*env)->NewGlobalRef(env, NULL);
+		return combineErrorCode(RES_ERROR, 0);
 	}
 
 	jobjectArray tempDeviceArray = (*env)->NewObjectArray(env, tempSize * 2,
 			tempObjectClazz, NULL);
+
+	if (tempDeviceArray == NULL) {
+		linked_list_clear(&tempList, &node_dealloc);
+		return combineErrorCode(RES_OUT_OF_MEMORY, 0);
+	}
 
 	linked_list_iterator tempIter;
 	linked_list_iterator_ascending(&tempList, &tempIter);
@@ -491,7 +501,7 @@ JNIEXPORT jobjectArray JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedM
 		jlongArray tempSizeArray = (*env)->NewLongArray(env, 1);
 		if (tempSizeArray == NULL) {
 			linked_list_clear(&tempList, &node_dealloc);
-			return (*env)->NewGlobalRef(env, NULL);
+			return combineErrorCode(RES_OUT_OF_MEMORY, 0);
 		}
 
 		(*env)->SetLongArrayRegion(env, tempSizeArray, 0, 1, &tempSizeLong);
@@ -500,7 +510,7 @@ JNIEXPORT jobjectArray JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedM
 				tempCurrent->device->nameLength);
 		if (tempName == NULL) {
 			linked_list_clear(&tempList, &node_dealloc);
-			return (*env)->NewGlobalRef(env, NULL);
+			return combineErrorCode(RES_OUT_OF_MEMORY, 0);
 		}
 
 		(*env)->SetByteArrayRegion(env, tempName, 0,
@@ -517,7 +527,9 @@ JNIEXPORT jobjectArray JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedM
 
 	linked_list_clear(&tempList, &node_dealloc);
 
-	return tempDeviceArray;
+	(*env)->SetObjectArrayElement(env, result, 0, tempDeviceArray);
+
+	return combineErrorCode(RES_OK, 0);
 }
 
 /*
@@ -529,7 +541,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_o
 		JNIEnv *env, jclass aClazz, jbyteArray aName, jlongArray aHandle) {
 	if (aName == NULL || aHandle == NULL
 			|| (*env)->GetArrayLength(env, aHandle) != 3) {
-		return RES_INVALID_ARGUMENTS;
+		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
 	}
 
 	linked_list tempList;
@@ -545,6 +557,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_o
 
 	jsize tempSize = (*env)->GetArrayLength(env, aName);
 	jbyte *tempBuf = (*env)->GetByteArrayElements(env, aName, NULL);
+	if (tempBuf == NULL) {
+		linked_list_clear(&tempList, &node_dealloc);
+		return combineErrorCode(RES_OUT_OF_MEMORY, 0);
+	}
 
 	struct ivshmem_device *tempFound = NULL;
 	for (struct ivshmem_device_node *tempCurrent =
@@ -589,7 +605,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_o
 		tempHandle[2] = (jlong) tempConnectedDevice->map.vector_count;
 		(*env)->ReleaseLongArrayElements(env, aHandle, tempHandle, 0);
 
-		return RES_OK;
+		return combineErrorCode(RES_OK, 0);
 	}
 	default: {
 		free(tempConnectedDevice);
@@ -643,7 +659,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_s
 		return combineErrorCode(RES_OK, GetLastError());
 	}
 
-	return RES_INTERRUPT_SEND_ERROR;
+	return combineErrorCode(RES_INTERRUPT_SEND_ERROR, 0);
 }
 
 /*
@@ -688,5 +704,5 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_p
 	(*env)->ReleasePrimitiveArrayCritical(env, someVectors, tempResolvedBuffer,
 			JNI_OK);
 
-	return RES_OK;
+	return combineErrorCode(RES_OK, 0);
 }

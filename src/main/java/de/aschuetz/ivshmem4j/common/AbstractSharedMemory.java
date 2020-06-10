@@ -29,8 +29,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static de.aschuetz.ivshmem4j.common.CommonErrorCodeUtil.checkCodeCMPXCHG;
-import static de.aschuetz.ivshmem4j.common.CommonErrorCodeUtil.checkCodeOK;
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeCMPXCHG;
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeOK;
 
 public abstract class AbstractSharedMemory implements SharedMemory {
 
@@ -222,7 +222,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
     }
 
     @Override
-    public void write(long offset, byte value, long len) throws SharedMemoryException {
+    public void set(long offset, byte value, long len) throws SharedMemoryException {
         checkCodeOK(CommonSharedMemory.memset(nativePointer, offset, value, len));
     }
 

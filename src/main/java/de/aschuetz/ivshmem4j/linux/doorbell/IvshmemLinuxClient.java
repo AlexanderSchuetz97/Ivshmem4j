@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static de.aschuetz.ivshmem4j.linux.doorbell.LinuxErrorCodeUtil.*;
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.*;
 
 /*
  * ivshmem-doorbell implementation of a host side ivshmem client.
@@ -77,7 +77,7 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
         int[] tempVectors = new int[1];
 
         long tempResult = LinuxSharedMemory.getVectors(nativePointer, peer, tempVectors);
-        LinuxErrorCodeUtil.checkCodeOK(tempResult);
+        checkCodeOK(tempResult);
 
         return tempVectors[0];
     }

@@ -20,6 +20,9 @@
 
 package de.aschuetz.ivshmem4j.linux.doorbell;
 
+/**
+ * JNI internal.
+ */
 class LinuxSharedMemory {
 
     /*

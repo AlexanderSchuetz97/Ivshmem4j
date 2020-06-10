@@ -288,7 +288,7 @@ public class RingBuffer implements Closeable {
      * Output Stream and only when its certain that there is no longer an Active RingBuffer at the address.
      */
     public void cleanMemoryArea() throws IOException {
-        memory.write(address, (byte) 0, OVERHEAD);
+        memory.set(address, (byte) 0, OVERHEAD);
     }
 
     /**

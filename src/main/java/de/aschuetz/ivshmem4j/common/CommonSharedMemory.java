@@ -20,6 +20,9 @@
 
 package de.aschuetz.ivshmem4j.common;
 
+/**
+ * JNI internal.
+ */
 class CommonSharedMemory {
 
     static long EXPECTED_NATIVE_LIB_VERSION = 0;

@@ -26,6 +26,8 @@ import de.aschuetz.ivshmem4j.api.SharedMemoryException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeOK;
+
 /**
  * You may connect multiple ivshmem devices to your windows vm.
  * This class can be used to identify the individual pci devices by enumerating them, getting its name (virtual pci bus-id),
@@ -47,10 +49,15 @@ public class IvshmemWindowsDevice {
      * Gets a collection of all currently installed IVSHMEM windows hardware devices.
      */
     public static Collection<IvshmemWindowsDevice> getSharedMemoryDevices() throws SharedMemoryException {
-        Object[] tempRaw = WindowsSharedMemory.getDevices();
-        if (tempRaw == null) {
+        Object[] tempResult = new Object[1];
+        checkCodeOK(WindowsSharedMemory.getDevices(tempResult));
+
+        Object tempRawObj = tempResult[0];
+        if (!(tempRawObj instanceof Object[])) {
             throw new SharedMemoryException("Native code was unable to allocate object array!");
         }
+
+        Object[] tempRaw = (Object[]) tempRawObj;
 
         if (tempRaw.length % 2 != 0) {
             throw new SharedMemoryException("Native code allocated an invalid object array!");
@@ -93,7 +100,7 @@ public class IvshmemWindowsDevice {
      */
     public SharedMemory open() throws SharedMemoryException {
         long[] tempResult = new long[3];
-        WindowsErrorCodeUtil.checkCodeOK(WindowsSharedMemory.openDevice(name, tempResult));
+        checkCodeOK(WindowsSharedMemory.openDevice(name, tempResult));
         return new IvshmemMappedWindowsDevice(this, tempResult[0], (int) tempResult[1], (int) tempResult[2]);
     }
 

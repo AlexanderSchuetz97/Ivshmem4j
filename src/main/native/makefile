@@ -36,7 +36,9 @@ LINUX_BUILD_DIR_COMMON=$(LINUX_BUILD_DIR)/common
 TARGET_DIR=../resources
 
 WINDOWS_CFLAGS=-I. -I$(WINDOWS_JDK)/include -I$(WINDOWS_JDK)/include/win32
-LINUX_CFLAGS=-I. -I$(LINUX_JDK)/include -I$(LINUX_JDK)/include/linux -fPIC
+
+#-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector are added to prevent dependencies to new GLIBC versions.
+LINUX_CFLAGS=-I. -I$(LINUX_JDK)/include -I$(LINUX_JDK)/include/linux -fPIC -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector
 
 
 WINDOWS_LIBS =-lhid -lsetupapi

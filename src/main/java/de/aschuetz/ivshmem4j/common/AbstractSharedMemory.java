@@ -32,6 +32,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeCMPXCHG;
 import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeOK;
 
+/**
+ * Abstract Internal Impl for Shared Memory that has only basic read/write capabilities.
+ */
 public abstract class AbstractSharedMemory implements SharedMemory {
 
     protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -82,8 +85,12 @@ public abstract class AbstractSharedMemory implements SharedMemory {
         closeStarted = true;
         writeLock.lock();
         try {
+            if (closeStarted) {
+                return;
+            }
             close0();
         } finally {
+            nativePointer = 0;
             writeLock.unlock();
         }
     }
@@ -557,6 +564,118 @@ public abstract class AbstractSharedMemory implements SharedMemory {
     }
 
     @Override
+    public boolean spin(long offset, long expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
+        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
+        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
+        long tempUntil = System.nanoTime() + tempTimeout;
+        boolean tempWasInterrupted = false;
+        do {
+            if (readLong(offset) == expect) {
+                if (tempWasInterrupted) {
+                    Thread.currentThread().interrupt();
+                }
+                return true;
+            }
+            if (aSpinTime > 0) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(tempSpin);
+                } catch (InterruptedException e) {
+                    tempWasInterrupted = true;
+                }
+            }
+        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
+
+        if (tempWasInterrupted) {
+            Thread.currentThread().interrupt();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean spin(long offset, int expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
+        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
+        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
+        long tempUntil = System.nanoTime() + tempTimeout;
+        boolean tempWasInterrupted = false;
+        do {
+            if (readInt(offset) == expect) {
+                if (tempWasInterrupted) {
+                    Thread.currentThread().interrupt();
+                }
+                return true;
+            }
+            if (aSpinTime > 0) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(tempSpin);
+                } catch (InterruptedException e) {
+                    tempWasInterrupted = true;
+                }
+            }
+        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
+
+        if (tempWasInterrupted) {
+            Thread.currentThread().interrupt();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean spin(long offset, short expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
+        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
+        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
+        long tempUntil = System.nanoTime() + tempTimeout;
+        boolean tempWasInterrupted = false;
+        do {
+            if (readShort(offset) == expect) {
+                if (tempWasInterrupted) {
+                    Thread.currentThread().interrupt();
+                }
+                return true;
+            }
+            if (aSpinTime > 0) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(tempSpin);
+                } catch (InterruptedException e) {
+                    tempWasInterrupted = true;
+                }
+            }
+        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
+
+        if (tempWasInterrupted) {
+            Thread.currentThread().interrupt();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean spin(long offset, byte expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
+        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
+        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
+        long tempUntil = System.nanoTime() + tempTimeout;
+        boolean tempWasInterrupted = false;
+        do {
+            if (read(offset) == expect) {
+                if (tempWasInterrupted) {
+                    Thread.currentThread().interrupt();
+                }
+                return true;
+            }
+            if (aSpinTime > 0) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(tempSpin);
+                } catch (InterruptedException e) {
+                    tempWasInterrupted = true;
+                }
+            }
+        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
+
+        if (tempWasInterrupted) {
+            Thread.currentThread().interrupt();
+        }
+        return false;
+    }
+
+    @Override
     public boolean compareAndSet(long offset, long expect, long update) throws SharedMemoryException {
         return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
     }
@@ -606,6 +725,41 @@ public abstract class AbstractSharedMemory implements SharedMemory {
                     } catch (Exception e) {
                         e.printStackTrace();
                         AbstractSharedMemory.this.close();
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void startNecessaryThreads(Executor executor, final Thread.UncaughtExceptionHandler handler) {
+        if (supportsInterrupts()) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        AbstractSharedMemory.this.receiveInterrupts();
+                    } catch (Exception e) {
+                        AbstractSharedMemory.this.close();
+                        if (handler != null) {
+                            handler.uncaughtException(Thread.currentThread(), e);
+                        }
+                    }
+                }
+            });
+        }
+
+        if (supportsConnectionListening()) {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        AbstractSharedMemory.this.listenForNewConnections();
+                    } catch (Exception e) {
+                        AbstractSharedMemory.this.close();
+                        if (handler != null) {
+                            handler.uncaughtException(Thread.currentThread(), e);
+                        }
                     }
                 }
             });

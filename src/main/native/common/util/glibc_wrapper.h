@@ -18,30 +18,6 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.aschuetz.ivshmem4j.common;
+#include <stddef.h>
 
-/**
- * Abstract Internal Impl for Shared Memory that has some sort of peerID.
- */
-public abstract class AbstractSharedMemoryWithPeerID extends AbstractSharedMemory {
-
-
-    protected final int peerID;
-
-    protected AbstractSharedMemoryWithPeerID(long size, int peerID) {
-        super(size);
-        this.peerID = peerID;
-    }
-
-    @Override
-    public boolean hasOwnPeerID() {
-        return true;
-    }
-
-    @Override
-    public int getOwnPeerID() {
-        return peerID;
-    }
-
-
-}
+void* wrap_memcpy(void *destination, const void *source, size_t len);

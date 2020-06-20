@@ -18,30 +18,16 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.aschuetz.ivshmem4j.common;
-
-/**
- * Abstract Internal Impl for Shared Memory that has some sort of peerID.
- */
-public abstract class AbstractSharedMemoryWithPeerID extends AbstractSharedMemory {
+#include "glibc_wrapper.h"
+#include <string.h>
+#include "inline.h"
 
 
-    protected final int peerID;
 
-    protected AbstractSharedMemoryWithPeerID(long size, int peerID) {
-        super(size);
-        this.peerID = peerID;
-    }
-
-    @Override
-    public boolean hasOwnPeerID() {
-        return true;
-    }
-
-    @Override
-    public int getOwnPeerID() {
-        return peerID;
-    }
-
-
+//Prevents a dependancy to GLIBC_2.14...
+#if defined(linux) && (defined(__amd64__) || defined(__i386__))
+asm (".symver memcpy, memcpy@GLIBC_2.2.5");
+#endif
+FFINLINE void* wrap_memcpy(void *destination, const void *source, size_t len) {
+    return memcpy(destination, source, len);
 }

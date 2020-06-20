@@ -110,7 +110,7 @@ public class RingBufferTest {
 
             @Override
             public OutputStream call() throws Exception {
-                return bufferOutput.connectOutputStream(4096, 5000, 64);
+                return bufferOutput.connectOutputStream(4096, 5000, 64, TimeUnit.MILLISECONDS);
             }
         });
 
@@ -125,7 +125,7 @@ public class RingBufferTest {
             }
         }
 
-        inputStream = bufferInput.connectInputStream(0, 64);
+        inputStream = bufferInput.connectInputStream(0, 64, TimeUnit.MILLISECONDS);
         outputStream = tempFutur.get(5000, TimeUnit.MILLISECONDS);
 
         Assert.assertNotNull(inputStream);

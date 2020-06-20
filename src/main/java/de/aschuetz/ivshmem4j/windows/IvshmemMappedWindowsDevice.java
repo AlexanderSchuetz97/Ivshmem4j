@@ -67,6 +67,15 @@ public class IvshmemMappedWindowsDevice extends AbstractSharedMemoryWithInterrup
             return;
         }
         WindowsSharedMemory.close(nativePointer);
-        nativePointer = 0;
+    }
+
+    @Override
+    public String toString() {
+        return "IvshmemMappedWindowsDevice{" +
+                "path=" + device.getNameAsString() +
+                ", vectors=" + vectors +
+                ", peerID=" + peerID +
+                ", size=" + size +
+                '}';
     }
 }

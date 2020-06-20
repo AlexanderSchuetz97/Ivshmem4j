@@ -38,9 +38,16 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
 
     private final List<PeerConnectionListener> peerConnectionListeners = new ArrayList<>();
 
-    private IvshmemLinuxClient(long nativeHandle, int peerID, int vectors, long size) {
+    private final String path;
+
+    private IvshmemLinuxClient(long nativeHandle, int peerID, int vectors, long size, String path) {
         super(size, peerID, vectors);
         this.nativePointer = nativeHandle;
+        this.path = path;
+    }
+
+    public String getServerSocketPath() {
+        return path;
     }
 
     /**
@@ -52,7 +59,7 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
         long tempCode = LinuxSharedMemory.openDevice(aPath, tempResult);
         checkCodeOK(tempCode);
 
-        return new IvshmemLinuxClient(tempResult[0], (int) tempResult[1], (int) tempResult[2], tempResult[3]);
+        return new IvshmemLinuxClient(tempResult[0], (int) tempResult[1], (int) tempResult[2], tempResult[3], aPath);
     }
 
 
@@ -101,8 +108,6 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
         }
 
         LinuxSharedMemory.close(nativePointer);
-
-        nativePointer = 0;
     }
 
     @Override
@@ -130,7 +135,6 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
                 if (Thread.interrupted()) {
                     throw new InterruptedException();
                 }
-
 
                 if (checkCodePollServer(LinuxSharedMemory.pollServer(nativePointer, tempResult))) {
                     continue;
@@ -170,5 +174,13 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
         }
     }
 
-
+    @Override
+    public String toString() {
+        return "IvshmemLinuxClient{" +
+                "path=" + path +
+                ", vectors=" + vectors +
+                ", peerID=" + peerID +
+                ", size=" + size +
+                '}';
+    }
 }

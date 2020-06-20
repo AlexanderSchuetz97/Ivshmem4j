@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
+/**
+ * Abstract Internal Impl for Shared Memory that has interrupt capability.
+ */
 public abstract class AbstractSharedMemoryWithInterrupts extends AbstractSharedMemoryWithPeerID {
 
     protected final List<InterruptServiceRoutine>[] interruptServiceRoutines;

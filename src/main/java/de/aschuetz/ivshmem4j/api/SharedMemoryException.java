@@ -36,8 +36,8 @@ public class SharedMemoryException extends IOException {
     protected final ErrorCode code;
     /**
      * Sometimes the operating system supplies an additional code which may also be present.
-     * On Linux this is the POISX error code after making a syscall.
-     * On Windows this would be the value of GetLastError() after making a syscall.
+     * On Linux this is the "errno" error code after making a call.
+     * On Windows this would be the value of GetLastError() after making a call.
      * This value is 0 if its not present.
      */
     protected final int operatingSystemErrorCode;

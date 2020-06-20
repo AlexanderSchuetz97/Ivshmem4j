@@ -30,6 +30,7 @@
 #include "../common/response.h"
 #include "../common/shmem_common.h"
 #include "../common/jni/de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory.h"
+#include "../common/util/glibc_wrapper.h"
 
 struct mapped_file {
 	struct mapped_shared_memory map;
@@ -64,7 +65,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
 	ssize_t tempLen = strlen(tempChars);
 	char buf[tempLen+1];
 
-	memcpy(&buf[0], tempChars, tempLen+1);
+	wrap_memcpy(&buf[0], tempChars, tempLen+1);
 	(*env)->ReleaseStringUTFChars(env, aPath, tempChars);
 
 	int tempFlags = O_RDWR;

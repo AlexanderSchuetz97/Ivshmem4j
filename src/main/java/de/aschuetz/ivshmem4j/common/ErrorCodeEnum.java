@@ -51,6 +51,8 @@ public enum ErrorCodeEnum implements ErrorCode {
 
     //Linux Host Plain
     ERROR_SHMEM_FILE_SET_SIZE(33, "Unable to write the shared memory file size"),
+    FILE_DOES_NOT_EXIST(42, "Shared memory file does not exist."),
+    FILL_EMPTY_FILE_ERROR(33, "Error setting the new shared memory file size"),
 
     //Linux Host Doorbell
     PACKET_TOO_SHORT(2, "Received IVSHMEM packet from IVSHMEM server is too short"),
@@ -70,13 +72,14 @@ public enum ErrorCodeEnum implements ErrorCode {
     PEER_NOT_FOUND(30, "The requested peer could not be found"),
     POLL_SERVER_TIMEOUT(27, "Timeout while reading packets from the IVSHMEM server"),
 
-    //Linux Host Plain
-    FILL_EMPTY_FILE_ERROR(33, "Error setting the new shared memory file size"),
 
     //Windows Guest
     ERROR_MMAP_SIZE_CHANGED(36, "Size of shared memory changed unexpectedly after mapping PCI device"),
     INTERRUPT_CREATE_EVENT_FAILURE(37, "Failed to createOrOpen a event handle to wait for interrupts"),
     INTERRUPT_EVENT_REGISTER_FAILURE(38, "Failed to register a event handle to the PCI device driver"),
+    ENUMERATE_PCI_DEVICE_ERROR(39, "Error enumerating pci devices"),
+    OPEN_PCI_DEVICE_HANDLE_ERROR(40, "Error opening pci device handle"),
+    TOO_MANY_PCI_DEVICES(41, "Too many pci devices to enumerate"),
 
     ;
     private final int code;

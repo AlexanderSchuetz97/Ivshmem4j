@@ -75,6 +75,9 @@ public class LinuxMappedFileSharedMemory extends AbstractSharedMemory {
 
     @Override
     protected void close0() {
+        if (nativePointer == 0) {
+            return;
+        }
         LinuxSharedMemory.close(nativePointer);
     }
 

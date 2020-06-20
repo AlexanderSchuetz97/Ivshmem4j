@@ -23,6 +23,7 @@
 #include "shmem_common.h"
 #include "../common/jni/de_aschuetz_ivshmem4j_common_CommonSharedMemory.h"
 #include "util/atomics.h"
+#include "util/glibc_wrapper.h"
 #include <string.h>
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
@@ -59,7 +60,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 	}
 	void *tempSource = tempResolvedBuffer + tempBufferOffset;
 	void *tempTarget = (tempConnection->memory + tempOffset);
-	memcpy(tempTarget, tempSource, tempToCopy);
+	wrap_memcpy(tempTarget, tempSource, tempToCopy);
 	(*env)->ReleasePrimitiveArrayCritical(env, aBuffer, tempResolvedBuffer,
 			JNI_ABORT);
 	return combineErrorCode(RES_OK, 0);
@@ -256,7 +257,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 	void *tempTarget = tempResolvedBuffer + tempBufferOffset;
 	void *tempSource = (tempConnection->memory + tempOffset);
-	memcpy(tempTarget, tempSource, tempToCopy);
+	wrap_memcpy(tempTarget, tempSource, tempToCopy);
 	(*env)->ReleasePrimitiveArrayCritical(env, aBuffer, tempResolvedBuffer,
 			JNI_OK);
 	return combineErrorCode(RES_OK, 0);

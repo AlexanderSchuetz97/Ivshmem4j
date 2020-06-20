@@ -24,9 +24,7 @@ See https://github.com/takari/maven-wrapper for more information regarding maven
 
 ##### Limitations of Linux guests:
 Since there is no stable linux kernel module to interact with the emulated ivshmem pci device 
-and since its is not possible to receive interrupts without one interrupts are not supported on Linux guests.
-Writing and bundling a kernel module with Ivshmem4j is out of scope for Ivshemem4j.
-
+and since its is not possible to receive interrupts without one, interrupts are not supported on Linux guests.
 ## Building / Installation
 #### Windows:
 Building Ivshmem4j on Windows is currently not possible.

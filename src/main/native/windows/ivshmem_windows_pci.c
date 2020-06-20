@@ -28,6 +28,7 @@
 #include "../common/util/atomics.h"
 #include "../common/shmem_common.h"
 #include "../common/util/linked_list.h"
+#include "../common/util/glibc_wrapper.h"
 
 DEFINE_GUID(DEVICE_GUID, 0xdf576976, 0x569d, 0x4672, 0x95, 0xa0, 0xf5, 0x7e,
 		0x4e, 0xa0, 0xb2, 0x10);
@@ -133,13 +134,22 @@ uint64_t getDevices(linked_list *aList) {
 		DWORD tempDeviceDetailLength = 0;
 
 		tempSuccess = SetupDiGetDeviceInterfaceDetail(tempDeviceInfoSet,
-				&tempDeviceData,
-				NULL, 0, &tempDeviceDetailLength, NULL);
+				&tempDeviceData, NULL, 0, &tempDeviceDetailLength, NULL);
 
-		if (!tempSuccess) {
+
+		if (tempSuccess) {
 			linked_list_clear(aList, &node_dealloc);
+
 			return combineErrorCode(RES_ENUMERATE_PCI_DEVICE_ERROR,
 					GetLastError());
+		}
+
+		if (!tempSuccess) {
+			DWORD tempErr = GetLastError();
+			if (tempErr != ERROR_INSUFFICIENT_BUFFER) {
+				return combineErrorCode(RES_ENUMERATE_PCI_DEVICE_ERROR,
+						tempErr);
+			}
 		}
 
 		if (tempDeviceDetailLength < sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA)) {
@@ -223,7 +233,7 @@ uint64_t getDevices(linked_list *aList) {
 		linked_list_node_init(&tempNode->node);
 		tempNode->device = tempDevice;
 
-		memcpy(&tempDevice->name[0], tempDeviceDetail->DevicePath,
+		wrap_memcpy(&tempDevice->name[0], tempDeviceDetail->DevicePath,
 				tempDevicePathLength);
 
 		tempDevice->nameLength = tempDevicePathLength;

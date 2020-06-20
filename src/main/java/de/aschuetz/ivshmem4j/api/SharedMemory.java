@@ -268,7 +268,7 @@ public interface SharedMemory extends Closeable {
     /*
      * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
-     * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
      */
     boolean spinAndSet(long offset, long expect, long update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
@@ -276,7 +276,7 @@ public interface SharedMemory extends Closeable {
     /*
      * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
-     * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
      */
     boolean spinAndSet(long offset, int expect, int update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
@@ -284,7 +284,7 @@ public interface SharedMemory extends Closeable {
     /*
      * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
-     * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
      */
     boolean spinAndSet(long offset, short expect, short update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
@@ -292,10 +292,42 @@ public interface SharedMemory extends Closeable {
     /*
      * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
      * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
-     * a negative value for aSpinTime indicates that the thread shouldnt be put to sleep.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
      */
     boolean spinAndSet(long offset, byte expect, byte update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     * a negative value for aTimeout indicates the method should not timeout and thus never return false.
+     */
+    boolean spin(long offset, long expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     * a negative value for aTimeout indicates the method should not timeout and thus never return false.
+     */
+    boolean spin(long offset, int expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     * a negative value for aTimeout indicates the method should not timeout and thus never return false.
+     */
+    boolean spin(long offset, short expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     * a negative value for aTimeout indicates the method should not timeout and thus never return false.
+     */
+    boolean spin(long offset, byte expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
 
     /**
      * returns true if this SharedMemory supports interrupts.
@@ -366,7 +398,15 @@ public interface SharedMemory extends Closeable {
 
     /**
      * Starts all necessary threads that this Shared Memory needs in order to update all the listeners
-     * using the given Executor.
+     * using the given Executor. Should a thread fail exceptionally then printStackTrace is invoked and
+     * the SharedMemory is closed.
      */
     void startNecessaryThreads(Executor executor);
+
+    /**
+     * Starts all necessary threads that this Shared Memory needs in order to update all the listeners
+     * using the given Executor. If a started thread fails exceptionally then said exception is supplied
+     * to the given {@link java.lang.Thread.UncaughtExceptionHandler} and the Shared Memory is closed.
+     */
+    void startNecessaryThreads(Executor executor, Thread.UncaughtExceptionHandler handler);
 }

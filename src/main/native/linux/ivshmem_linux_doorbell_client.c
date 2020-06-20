@@ -40,7 +40,7 @@
 #include "../common/jni/de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMemory.h"
 #include "../common/response.h"
 #include "../common/shmem_common.h"
-
+#include "../common/util/glibc_wrapper.h"
 
 
 #define IVSHMEM_PACKET_SIZE sizeof(uint64_t)
@@ -53,9 +53,7 @@
 const uint64_t MAGIC_NUMBER = 18446744073709551615u;
 const uint64_t INTERRUPT_PACKET = 1;
 
-struct timeval DEFAULT_TIMEOUT = { 1, 0 };
-struct timeval NO_TIMEOUT = { 0, 0 };
-
+const struct timeval DEFAULT_TIMEOUT = { 2, 0 };
 
 
 uint64_t FFINLINE convertEndian(uint64_t aVal) {
@@ -297,7 +295,7 @@ uint64_t readPacket(int sock_fd, struct ivshmem_packet *packet) {
 			continue;
 		}
 
-		memcpy(&packet->fd, CMSG_DATA(cmsg), sizeof(int));
+		wrap_memcpy(&packet->fd, CMSG_DATA(cmsg), sizeof(int));
 		return combineErrorCode(RES_FD, 0);
 	}
 
@@ -741,7 +739,7 @@ uint64_t pollIVSHMEM(struct ivshem_connection *aConnection, uint16_t* aPeer, int
 		}
 
 		if (tempOld != NULL) {
-			memcpy(tempNewVectors, tempOld, (tempNode->vector_count) * sizeof(int));
+			wrap_memcpy(tempNewVectors, tempOld, (tempNode->vector_count) * sizeof(int));
 			free(tempOld);
 		}
 
@@ -813,7 +811,8 @@ uint64_t pollInterrupt(struct ivshem_connection *aConnection, uint16_t someVecto
 
 
 
-	int tempResult = select(*aConnection->vector_fd_highest, &tempSet, NULL, NULL, &DEFAULT_TIMEOUT);
+	struct timeval tempTimeout = DEFAULT_TIMEOUT;
+	int tempResult = select(*aConnection->vector_fd_highest, &tempSet, NULL, NULL, &tempTimeout);
 
 	if (tempResult == 0) {
 		return combineErrorCode(RES_INTERRUPT_TIMEOUT, 0);
@@ -960,7 +959,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
 
 	size_t tempLen = strlen(tempPath);
 	char tempPathCopy[tempLen+1];
-	memcpy(tempPathCopy, tempPath, tempLen+1);
+	wrap_memcpy(tempPathCopy, tempPath, tempLen+1);
 	(*env)->ReleaseStringUTFChars(env, aPath, tempPath);
 
 	struct ivshem_connection* tempConnection = malloc(sizeof(struct ivshem_connection));

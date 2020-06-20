@@ -275,7 +275,7 @@ public class RingBuffer implements Closeable {
      * both sides support them.
      */
     public boolean usesInterrupts() {
-        if (wasOpened()) {
+        if (!wasOpened()) {
             throw new IllegalStateException("Not open!");
         }
 
@@ -300,6 +300,14 @@ public class RingBuffer implements Closeable {
         return memory.readInt(address + VECTOR_OFFSET);
     }
 
+    public int getOtherPeer() {
+        if (!usesInterrupts()) {
+            throw new IllegalStateException("Doesnt use interrupts.");
+        }
+
+        return otherPeer;
+    }
+
     /**
      * Call this method to attempt to close another RingBuffer at this address if you suspect that it may be lingering around after an application crash.
      * This method should be called before any connection attempts were made.
@@ -317,7 +325,7 @@ public class RingBuffer implements Closeable {
      */
     public long getBufferSize() throws IOException {
         if (size == -1) {
-            throw new IOException("Unconnected");
+            throw new IllegalStateException("Unconnected");
         }
         return size;
     }
@@ -342,7 +350,7 @@ public class RingBuffer implements Closeable {
      */
     protected void setWriteIndex(long aNewIndex) throws SharedMemoryException {
         if (isReadFlag) {
-            throw new IllegalStateException("Cannot call this method while reading!");
+            throw new SharedMemoryException("Cannot call this method while reading!");
         }
 
         if (!memory.compareAndSet(address + WRITE_INDEX_OFFSET, localIndex, aNewIndex)) {
@@ -376,7 +384,7 @@ public class RingBuffer implements Closeable {
      */
     protected void setReadIndex(long aNewIndex) throws SharedMemoryException {
         if (!isReadFlag) {
-            throw new IllegalStateException("Cannot call this method while writing!");
+            throw new SharedMemoryException("Cannot call this method while writing!");
         }
 
         if (!memory.compareAndSet(address + READ_INDEX_OFFSET, localIndex, aNewIndex)) {
@@ -511,7 +519,7 @@ public class RingBuffer implements Closeable {
      * @throws SharedMemoryException if an error/timeout occurs.
      * @throws InterruptedException  If the thread was interrupted while connecting.
      */
-    public OutputStream connectOutputStream(long aBufferSize, long aTimeout, long aSpinTime) throws SharedMemoryException, InterruptedException {
+    public OutputStream connectOutputStream(long aBufferSize, long aTimeout, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException, InterruptedException {
         accessLock.lock();
         try {
             if (isClosed()) {
@@ -524,7 +532,7 @@ public class RingBuffer implements Closeable {
 
             vector = -1;
             useInterrupts = false;
-            return connectOutputStreamInternal(aBufferSize, aTimeout, aSpinTime);
+            return connectOutputStreamInternal(aBufferSize, aTimeout, aSpinTime, aUnit);
         } finally {
             accessLock.unlock();
         }
@@ -546,7 +554,7 @@ public class RingBuffer implements Closeable {
      * @throws SharedMemoryException if an error/timeout occurs.
      * @throws InterruptedException  If the thread was interrupted while connecting.
      */
-    public OutputStream connectOutputStream(int aVector, long aBufferSize, long aTimeout, long aSpinTime) throws SharedMemoryException, InterruptedException {
+    public OutputStream connectOutputStream(int aVector, long aBufferSize, long aTimeout, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException, InterruptedException {
         accessLock.lock();
         try {
             if (isClosed()) {
@@ -572,7 +580,7 @@ public class RingBuffer implements Closeable {
             vector = aVector;
             useInterrupts = true;
 
-            return connectOutputStreamInternal(aBufferSize, aTimeout, aSpinTime);
+            return connectOutputStreamInternal(aBufferSize, aTimeout, aSpinTime, aUnit);
         } finally {
             accessLock.unlock();
         }
@@ -581,7 +589,9 @@ public class RingBuffer implements Closeable {
     /**
      * Internal method to connect the output stream.
      */
-    protected OutputStream connectOutputStreamInternal(long aBufferSize, long aTimeout, long aSpinTime) throws SharedMemoryException, InterruptedException {
+    protected OutputStream connectOutputStreamInternal(long aBufferSize, long aTimeout, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException, InterruptedException {
+        long tempTimeout = TimeUnit.MILLISECONDS.convert(aTimeout, aUnit);
+        long tempSpinTime = TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit);
 
         if (getState() != STATE_UNCONNECTED) {
             throw new SharedMemoryException("The memory area already contains data! Set the first " + OVERHEAD + " bytes to 0 if you are sure that it is safe to do so!");
@@ -619,14 +629,14 @@ public class RingBuffer implements Closeable {
             throw new SharedMemoryException("Setting state to Connecting failed! Was another Output Stream created?");
         }
 
-        if (aTimeout < 0) {
-            aTimeout = Long.MAX_VALUE;
+        if (tempTimeout < 0) {
+            tempTimeout = Long.MAX_VALUE;
         }
 
         long tempStart = System.currentTimeMillis();
         while (true) {
 
-            if (System.currentTimeMillis() - tempStart > aTimeout) {
+            if (System.currentTimeMillis() - tempStart > tempTimeout) {
                 close();
                 throw new SharedMemoryException("Timeout while waiting for input stream to open, the ring buffer is now closed!");
             }
@@ -647,7 +657,7 @@ public class RingBuffer implements Closeable {
 
             if (tempState == 1) {
                 try {
-                    Thread.sleep(aSpinTime);
+                    Thread.sleep(tempSpinTime);
                 } catch (InterruptedException exc) {
                     close();
                     throw exc;
@@ -659,14 +669,16 @@ public class RingBuffer implements Closeable {
                 try {
                     if (useInterrupts) {
                         if (memory.read(address + INTERRUPT_FLAG_READ_OFFSET) != 1) {
-                            otherPeer = memory.read(address + INTERRUPT_FLAG_READ_OFFSET);
+                            memory.removeInterruptServiceRoutine(vector, interruptServiceRoutine);
+                            useInterrupts = false;
+                        } else {
+                            otherPeer = memory.readInt(address + READ_PEER_OFFSET);
                             if (memory.knowsOtherPeers() && !memory.isOtherPeerConnected(otherPeer)) {
                                 throw new SharedMemoryException("Other peer reported a peer id that is not connected!");
                             }
-                            memory.removeInterruptServiceRoutine(vector, interruptServiceRoutine);
-                            useInterrupts = false;
                         }
                     }
+
                 } catch (Exception exc) {
                     close();
                     throw exc;
@@ -690,7 +702,10 @@ public class RingBuffer implements Closeable {
      * @throws SharedMemoryException
      * @throws InterruptedException
      */
-    public InputStream connectInputStream(long aTimeout, long aSpinTime) throws SharedMemoryException, InterruptedException {
+    public InputStream connectInputStream(long aTimeout, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException, InterruptedException {
+        long tempTimeout = TimeUnit.MILLISECONDS.convert(aTimeout, aUnit);
+        long tempSpinTime = TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit);
+
         accessLock.lock();
         try {
             if (isClosed()) {
@@ -709,11 +724,11 @@ public class RingBuffer implements Closeable {
                     break;
                 }
 
-                if (System.currentTimeMillis() - tempStart > aTimeout) {
+                if (System.currentTimeMillis() - tempStart > tempTimeout) {
                     throw new SharedMemoryException("Timeout while waiting for input stream to open, the ring buffer is now closed!");
                 }
 
-                Thread.sleep(aSpinTime);
+                Thread.sleep(tempSpinTime);
             }
 
             long tempSize = memory.readLong(address + SIZE_OFFSET);

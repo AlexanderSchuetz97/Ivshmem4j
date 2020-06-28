@@ -55,6 +55,9 @@ JNI headers for Windows are generated using the linux JDK's javah command to avo
 
 Building:
 * clone the git repository
+````
+git clone -b 1.0 https://github.com/AlexanderSchuetz97/Ivshmem4j.git
+````
 * run: 
 ````
 bash compile_native.sh

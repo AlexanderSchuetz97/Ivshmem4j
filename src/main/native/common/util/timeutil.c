@@ -17,16 +17,15 @@
  * in the COPYING file in top level directory of Ivshmem4j.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+#include "timeutil.h"
+#include <sys/timeb.h>
 
-#include <stdint.h>
+#define NANOSECONDS_PER_MILISECOND 1000000
 
-#ifndef UTIL_COMMON_H_
-#define UTIL_COMMON_H_
+uint64_t currentTimeMillis() {
+	struct timeb tempCurrent;
 
-struct mapped_shared_memory {
-	void * memory;
-	uint64_t size;
-	volatile bool closed;
-};
+	ftime(&tempCurrent);
 
-#endif /* UTIL_COMMON_H_ */
+	return (tempCurrent.time * 1000) + tempCurrent.millitm;
+}

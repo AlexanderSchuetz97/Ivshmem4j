@@ -17,16 +17,14 @@
  * in the COPYING file in top level directory of Ivshmem4j.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+#ifndef UTIL_TIMEUTIL_H_
+#define UTIL_TIMEUTIL_H_
+
 
 #include <stdint.h>
 
-#ifndef UTIL_COMMON_H_
-#define UTIL_COMMON_H_
+uint64_t currentTimeMillis();
 
-struct mapped_shared_memory {
-	void * memory;
-	uint64_t size;
-	volatile bool closed;
-};
+void sleepMillis(uint64_t aMillis);
 
-#endif /* UTIL_COMMON_H_ */
+#endif /* UTIL_TIMEUTIL_H_ */

@@ -27,10 +27,10 @@ import de.aschuetz.ivshmem4j.api.SharedMemoryException;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeCMPXCHG;
-import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.checkCodeOK;
+import static de.aschuetz.ivshmem4j.common.ErrorCodeUtil.*;
 
 /**
  * Abstract Internal Impl for Shared Memory that has only basic read/write capabilities.
@@ -43,7 +43,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
 
     protected final ReentrantReadWriteLock.WriteLock writeLock = readWriteLock.writeLock();
 
-    protected volatile boolean closeStarted = false;
+    protected AtomicBoolean closeStarted = new AtomicBoolean(false);
 
     protected final long size;
 
@@ -82,12 +82,12 @@ public abstract class AbstractSharedMemory implements SharedMemory {
 
     @Override
     public void close() {
-        closeStarted = true;
+        if (!closeStarted.compareAndSet(false, true)) {
+            return;
+        }
+        CommonSharedMemory.markClosed(nativePointer);
         writeLock.lock();
         try {
-            if (closeStarted) {
-                return;
-            }
             close0();
         } finally {
             nativePointer = 0;
@@ -97,7 +97,7 @@ public abstract class AbstractSharedMemory implements SharedMemory {
 
     @Override
     public boolean isClosed() {
-        return closeStarted;
+        return closeStarted.get();
     }
 
     protected abstract void close0();
@@ -220,17 +220,32 @@ public abstract class AbstractSharedMemory implements SharedMemory {
 
     @Override
     public int readUnsignedShort(long offset) throws SharedMemoryException {
-        return readShort(offset) & 0xFFFF;
+        readLock.lock();
+        try {
+            return readShort(offset) & 0xFFFF;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int readUnsignedByte(long offset) throws SharedMemoryException {
-        return read(offset) & 0xFF;
+        readLock.lock();
+        try {
+            return read(offset) & 0xFF;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public void set(long offset, byte value, long len) throws SharedMemoryException {
-        checkCodeOK(CommonSharedMemory.memset(nativePointer, offset, value, len));
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.memset(nativePointer, offset, value, len));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     /**
@@ -397,307 +412,308 @@ public abstract class AbstractSharedMemory implements SharedMemory {
 
     @Override
     public long getAndAdd(long offset, long aLong) throws SharedMemoryException {
-        long[] tempParam = {aLong};
-        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            long[] tempParam = {aLong};
+            checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int getAndAdd(long offset, int aInt) throws SharedMemoryException {
-        int[] tempParam = {aInt};
-        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            int[] tempParam = {aInt};
+            checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public short getAndAdd(long offset, short aShort) throws SharedMemoryException {
-        short[] tempParam = {aShort};
-        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            short[] tempParam = {aShort};
+            checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public byte getAndAdd(long offset, byte aByte) throws SharedMemoryException {
-        byte[] tempParam = {aByte};
-        checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            byte[] tempParam = {aByte};
+            checkCodeOK(CommonSharedMemory.getAndAdd(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
 
     public long getAndSet(long offset, long aLong) throws SharedMemoryException {
-        long[] tempParam = {aLong};
-        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            long[] tempParam = {aLong};
+            checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public int getAndSet(long offset, int aInt) throws SharedMemoryException {
-        int[] tempParam = {aInt};
-        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            int[] tempParam = {aInt};
+            checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public short getAndSet(long offset, short aShort) throws SharedMemoryException {
-        short[] tempParam = {aShort};
-        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            short[] tempParam = {aShort};
+            checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public byte getAndSet(long offset, byte aByte) throws SharedMemoryException {
-        byte[] tempParam = {aByte};
-        checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
-        return tempParam[0];
+        readLock.lock();
+        try {
+            byte[] tempParam = {aByte};
+            checkCodeOK(CommonSharedMemory.getAndSet(nativePointer, offset, tempParam));
+            return tempParam[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean spinAndSet(long offset, long expect, long update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (compareAndSet(offset, expect, update)) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spinAndSet(long offset, int expect, int update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (compareAndSet(offset, expect, update)) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spinAndSet(long offset, short expect, short update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (compareAndSet(offset, expect, update)) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spinAndSet(long offset, byte expect, byte update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (compareAndSet(offset, expect, update)) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spin(long offset, long expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (readLong(offset) == expect) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spin(nativePointer, offset, expect, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spin(long offset, int expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (readInt(offset) == expect) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spin(nativePointer, offset, expect, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spin(long offset, short expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (readShort(offset) == expect) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spin(nativePointer, offset, expect, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
     }
 
     @Override
     public boolean spin(long offset, byte expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException {
-        long tempTimeout = Math.max(0, TimeUnit.NANOSECONDS.convert(aTimeout, aUnit));
-        long tempSpin = Math.max(0, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit));
-        long tempUntil = System.nanoTime() + tempTimeout;
-        boolean tempWasInterrupted = false;
-        do {
-            if (read(offset) == expect) {
-                if (tempWasInterrupted) {
-                    Thread.currentThread().interrupt();
-                }
-                return true;
-            }
-            if (aSpinTime > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tempSpin);
-                } catch (InterruptedException e) {
-                    tempWasInterrupted = true;
-                }
-            }
-        } while (aTimeout < 0 || System.nanoTime() < tempUntil);
-
-        if (tempWasInterrupted) {
-            Thread.currentThread().interrupt();
+        readLock.lock();
+        try {
+            return checkCodeSpin(CommonSharedMemory.spin(nativePointer, offset, expect, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), TimeUnit.MILLISECONDS.convert(aTimeout, aUnit)));
+        } finally {
+            readLock.unlock();
         }
-        return false;
+    }
+
+    @Override
+    public void spinAndSet(long offset, long expect, long update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spinAndSet(long offset, int expect, int update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spinAndSet(long offset, short expect, short update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spinAndSet(long offset, byte expect, byte update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spinAndSet(nativePointer, offset, expect, update, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spin(long offset, long expect, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spin(nativePointer, offset, expect, TimeUnit.MILLISECONDS.convert(aSpinTime, aUnit), -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spin(long offset, int expect, long aSpinTime, TimeUnit aTimeUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spin(nativePointer, offset, expect, aSpinTime, -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spin(long offset, short expect, long aSpinTime, TimeUnit aTimeUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spin(nativePointer, offset, expect, aSpinTime, -1));
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public void spin(long offset, byte expect, long aSpinTime, TimeUnit aTimeUnit) throws SharedMemoryException {
+        readLock.lock();
+        try {
+            checkCodeOK(CommonSharedMemory.spin(nativePointer, offset, expect, aSpinTime, -1));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean compareAndSet(long offset, long expect, long update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        readLock.lock();
+        try {
+            return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean compareAndSet(long offset, int expect, int update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        readLock.lock();
+        try {
+            return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean compareAndSet(long offset, short expect, short update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        readLock.lock();
+        try {
+            return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean compareAndSet(long offset, byte expect, byte update) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        readLock.lock();
+        try {
+            return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, expect, update));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     public boolean compareAndSet(long offset, byte[] data) throws SharedMemoryException {
-        return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, data));
+        readLock.lock();
+        try {
+            return checkCodeCMPXCHG(CommonSharedMemory.compareAndSet(nativePointer, offset, data));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override

@@ -298,6 +298,34 @@ public interface SharedMemory extends Closeable {
     boolean spinAndSet(long offset, byte expect, byte update, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
 
     /*
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
+     * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spinAndSet(long offset, long expect, long update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
+     * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spinAndSet(long offset, int expect, int update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
+     * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spinAndSet(long offset, short expect, short update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * sets the value to update if it ever becomes expect before aTimeout elapses. returns true if the value was write false if the timeout expired.
+     * the parameter aSpinTime determines how long the thread should be put to sleep before trying again after a failed attempt.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spinAndSet(long offset, byte expect, byte update, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
      * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
      * Returns if aTimeout elapsed before the value became expect.
      * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
@@ -328,6 +356,34 @@ public interface SharedMemory extends Closeable {
      * a negative value for aTimeout indicates the method should not timeout and thus never return false.
      */
     boolean spin(long offset, byte expect, long aSpinTime, long aTimeout, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spin(long offset, long expect, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spin(long offset, int expect, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spin(long offset, short expect, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
+
+    /*
+     * returns true if the value at offset becomes expected. After every read the Thread sleeps for aSpinTime.
+     * Returns if aTimeout elapsed before the value became expect.
+     * a negative value for aSpinTime indicates that the thread shouldn't be put to sleep.
+     */
+    void spin(long offset, byte expect, long aSpinTime, TimeUnit aUnit) throws SharedMemoryException;
 
     /**
      * returns true if this SharedMemory supports interrupts.

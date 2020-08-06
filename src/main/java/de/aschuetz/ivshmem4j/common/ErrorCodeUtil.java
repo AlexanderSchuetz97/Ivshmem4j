@@ -53,6 +53,19 @@ public class ErrorCodeUtil {
         }
     }
 
+    public static boolean checkCodeSpin(long aCode) throws SharedMemoryException {
+        ErrorCodeEnum tempCode = check(aCode);
+        if (tempCode == ErrorCodeEnum.OK) {
+            return true;
+        }
+
+        if (tempCode == ErrorCodeEnum.SPIN_TIMEOUT) {
+            return false;
+        }
+
+        throw new SharedMemoryException(tempCode, (int) aCode);
+    }
+
     /**
      * Throws an exception if this error cannot be handled.
      */
@@ -74,6 +87,8 @@ public class ErrorCodeUtil {
             case CMPXCHG_FAILED:
                 return tempCode;
             case POLL_SERVER_TIMEOUT:
+                return tempCode;
+            case SPIN_TIMEOUT:
                 return tempCode;
             case OUT_OF_MEMORY:
                 throw new OutOfMemoryError(tempCode.getHumanReadableErrorMessage());

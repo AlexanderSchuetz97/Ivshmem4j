@@ -125,7 +125,7 @@ public abstract class AbstractSharedMemoryWithInterrupts extends AbstractSharedM
         readLock.lock();
         try {
             int[] tempResult = new int[vectors + 1];
-            while (!closeStarted) {
+            while (!closeStarted.get()) {
                 if (Thread.interrupted()) {
                     throw new InterruptedException();
                 }

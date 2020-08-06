@@ -44,6 +44,8 @@
 #define RES_MEMORY_OUT_OF_BOUNDS 32
 #define RES_CMPXCHG_FAILED 34
 #define RES_OPEN_FAILURE 35
+#define RES_SPIN_CLOSED 44
+#define RES_SPIN_TIMEOUT 45
 
 //Linux common
 #define RES_ERROR_SHMEM_FSTAT 24
@@ -52,6 +54,7 @@
 //Linux plain
 #define RES_ERROR_SHMEM_FILE_SET_SIZE 33
 #define RES_FILE_DOES_NOT_EXIST 42
+#define RES_FILE_IS_EMPTY 43
 
 //Linux doorbell
 #define RES_PACKET_TOO_SHORT 2

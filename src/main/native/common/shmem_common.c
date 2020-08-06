@@ -24,7 +24,11 @@
 #include "../common/jni/de_aschuetz_ivshmem4j_common_CommonSharedMemory.h"
 #include "util/atomics.h"
 #include "util/glibc_wrapper.h"
+#include "util/timeutil.h"
 #include <string.h>
+
+
+
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
  * Method:    write
@@ -999,6 +1003,451 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_mar
 
 	return combineErrorCode(RES_OK, 0);
 }
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spinAndSet
+ * Signature: (JJJJJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJJJJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jlong aExpect, jlong aUpdate, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint64_t tempExpect = aExpect;
+	uint64_t tempUpdate = aUpdate;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint64_t) || tempOffset + sizeof(uint64_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	uint64_t *tempTarget = (uint64_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+		if (cmpxchg8b(tempTarget, tempExpect, tempUpdate)) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spinAndSet
+ * Signature: (JJIJJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJIIJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jint aExpect, jint aUpdate, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint32_t tempExpect = aExpect;
+	uint32_t tempUpdate = aUpdate;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint32_t) || tempOffset + sizeof(uint32_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	uint32_t *tempTarget = (uint32_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+		if (cmpxchg4b(tempTarget, tempExpect, tempUpdate)) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spinAndSet
+ * Signature: (JJSSJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJSSJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jshort aExpect, jshort aUpdate, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint16_t tempExpect = aExpect;
+	uint16_t tempUpdate = aUpdate;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint16_t) || tempOffset + sizeof(uint16_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	uint16_t *tempTarget = (uint16_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+		if (cmpxchg2b(tempTarget, tempExpect, tempUpdate)) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spinAndSet
+ * Signature: (JJBBJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJBBJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jbyte aExpect, jbyte aUpdate, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint8_t tempExpect = aExpect;
+	uint8_t tempUpdate = aUpdate;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint8_t) || tempOffset + sizeof(uint8_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	uint8_t *tempTarget = (uint8_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+		if (cmpxchg1b(tempTarget, tempExpect, tempUpdate)) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spin
+ * Signature: (JJJJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJJJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jlong aExpect, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint64_t tempExpect = aExpect;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint64_t) || tempOffset + sizeof(uint64_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	volatile uint64_t *tempTarget = (uint64_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+
+		if (*tempTarget == tempExpect) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spin
+ * Signature: (JJIIJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJIJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jint aExpect, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint32_t tempExpect = aExpect;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint32_t) || tempOffset + sizeof(uint32_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	volatile uint32_t *tempTarget = (uint32_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+
+		if (*tempTarget == tempExpect) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spin
+ * Signature: (JJSSJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJSJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jshort aExpect, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint16_t tempExpect = aExpect;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint16_t) || tempOffset + sizeof(uint16_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	volatile uint16_t *tempTarget = (uint16_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+
+		if (*tempTarget == tempExpect) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
+/*
+ * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
+ * Method:    spin
+ * Signature: (JJBBJ)J
+ */
+JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJBJJ
+(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jbyte aExpect, jlong aSpinWait, jlong aTimeout) {
+	struct mapped_shared_memory *tempConnection =
+					(struct mapped_shared_memory*) aConnectionPtr;
+
+	if (tempConnection == NULL) {
+		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
+	}
+
+	uint64_t tempOffset = aOffset;
+	uint8_t tempExpect = aExpect;
+
+	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint8_t) || tempOffset + sizeof(uint8_t) < tempOffset) {
+		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+
+	uint64_t tempCurrent;
+	uint64_t tempStart;
+	if (aTimeout >= 0) {
+		tempStart = currentTimeMillis();
+	}
+
+	volatile uint8_t *tempTarget = (uint8_t*) (tempConnection->memory + tempOffset);
+
+	while(!tempConnection->closed) {
+
+		if (*tempTarget == tempExpect) {
+			return combineErrorCode(RES_OK, 0);
+		}
+
+		if (aTimeout >= 0) {
+			tempCurrent = currentTimeMillis();
+			if (aSpinWait > 0) {
+				tempCurrent += aSpinWait;
+			}
+
+			if (tempCurrent-tempStart > aTimeout) {
+				return combineErrorCode(RES_SPIN_TIMEOUT, 0);
+			}
+		}
+
+		if (aSpinWait > 0) {
+			sleepMillis(aSpinWait);
+		}
+	}
+
+	return combineErrorCode(RES_SPIN_CLOSED, 0);
+}
+
 /*
  * Class:     de_aschuetz_ivshmem4j_common_CommonSharedMemory
  * Method:    getNativeLibVersion
@@ -1006,6 +1455,6 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_mar
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getNativeLibVersion
   (JNIEnv *env, jclass aClazz) {
-	return 0;
+	return 1;
 }
 

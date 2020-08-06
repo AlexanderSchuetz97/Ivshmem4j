@@ -44,6 +44,8 @@ public enum ErrorCodeEnum implements ErrorCode {
     MEMORY_OUT_OF_BOUNDS(32, "The shared memory is out of bounds"),
     CMPXCHG_FAILED(34, "Zero flag was not write after CMPXCHG instruction"),
     OPEN_FAILURE(35, "Failed to open the Shared Memory file or device Handle"),
+    SPIN_CLOSED(44, "Shared memory was closed while spinning"),
+    SPIN_TIMEOUT(45, "Timeout while spinning"),
 
     //Linux common
     ERROR_SHMEM_FSTAT(24, "Unable to fstat the shared memory file descriptor"),
@@ -53,6 +55,7 @@ public enum ErrorCodeEnum implements ErrorCode {
     ERROR_SHMEM_FILE_SET_SIZE(33, "Unable to write the shared memory file size"),
     FILE_DOES_NOT_EXIST(42, "Shared memory file does not exist."),
     FILL_EMPTY_FILE_ERROR(33, "Error setting the new shared memory file size"),
+    FILE_IS_EMPTY(43, "Shared memory file has a size of zero"),
 
     //Linux Host Doorbell
     PACKET_TOO_SHORT(2, "Received IVSHMEM packet from IVSHMEM server is too short"),

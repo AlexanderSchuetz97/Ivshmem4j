@@ -69,10 +69,15 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
     }
 
     public int[] getPeers() throws SharedMemoryException {
-        long[] tempCode = new long[1];
-        int[] tempRes = LinuxSharedMemory.getPeers(nativePointer, tempCode);
-        checkCodeOK(tempCode[0]);
-        return tempRes;
+        readLock.lock();
+        try {
+            long[] tempCode = new long[1];
+            int[] tempRes = LinuxSharedMemory.getPeers(nativePointer, tempCode);
+            checkCodeOK(tempCode[0]);
+            return tempRes;
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -81,24 +86,37 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
     }
 
     public int getVectors(int peer) throws SharedMemoryException {
-        int[] tempVectors = new int[1];
-
-        long tempResult = LinuxSharedMemory.getVectors(nativePointer, peer, tempVectors);
-        checkCodeOK(tempResult);
-
-        return tempVectors[0];
+        readLock.lock();
+        try {
+            int[] tempVectors = new int[1];
+            long tempResult = LinuxSharedMemory.getVectors(nativePointer, peer, tempVectors);
+            checkCodeOK(tempResult);
+            return tempVectors[0];
+        } finally {
+            readLock.unlock();
+        }
     }
 
 
     @Override
     public void sendInterrupt(int aPeer, int aVector) throws SharedMemoryException {
         checkInterruptSupport();
-        checkCodeOK(LinuxSharedMemory.sendInterrupt(nativePointer, aPeer, aVector));
+        readLock.lock();
+        try {
+            checkCodeOK(LinuxSharedMemory.sendInterrupt(nativePointer, aPeer, aVector));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
     protected boolean pollInterrupt0(int[] buffer) throws SharedMemoryException {
-        return checkCodePollInterrupt(LinuxSharedMemory.pollInterrupt(nativePointer, buffer));
+        readLock.lock();
+        try {
+            return checkCodePollInterrupt(LinuxSharedMemory.pollInterrupt(nativePointer, buffer));
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
@@ -131,7 +149,7 @@ public class IvshmemLinuxClient extends AbstractSharedMemoryWithInterrupts {
         readLock.lock();
         try {
             int[] tempResult = new int[2];
-            while (!closeStarted) {
+            while (!closeStarted.get()) {
                 if (Thread.interrupted()) {
                     throw new InterruptedException();
                 }

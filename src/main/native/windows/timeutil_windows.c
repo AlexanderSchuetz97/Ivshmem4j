@@ -17,16 +17,9 @@
  * in the COPYING file in top level directory of Ivshmem4j.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+#include "../common/util/timeutil.h"
+#include <synchapi.h>
 
-#include <stdint.h>
-
-#ifndef UTIL_COMMON_H_
-#define UTIL_COMMON_H_
-
-struct mapped_shared_memory {
-	void * memory;
-	uint64_t size;
-	volatile bool closed;
-};
-
-#endif /* UTIL_COMMON_H_ */
+void sleepMillis(uint64_t aMillis) {
+	Sleep(aMillis);
+}

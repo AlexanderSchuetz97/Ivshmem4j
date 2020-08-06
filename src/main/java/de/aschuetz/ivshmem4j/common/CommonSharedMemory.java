@@ -25,7 +25,7 @@ package de.aschuetz.ivshmem4j.common;
  */
 class CommonSharedMemory {
 
-    static long EXPECTED_NATIVE_LIB_VERSION = 0;
+    static long EXPECTED_NATIVE_LIB_VERSION = 1;
 
     static native long getNativeLibVersion();
 
@@ -101,4 +101,23 @@ class CommonSharedMemory {
      */
     static native long compareAndSet(long device, long offset, byte[] data);
 
+    /**
+     * Spin
+     */
+
+    static native long spinAndSet(long device, long offset, long expect, long update, long spinWait, long timeOut);
+
+    static native long spinAndSet(long device, long offset, int expect, int update, long spinWait, long timeOut);
+
+    static native long spinAndSet(long device, long offset, short expect, short update, long spinWait, long timeOut);
+
+    static native long spinAndSet(long device, long offset, byte expect, byte update, long spinWait, long timeOut);
+
+    static native long spin(long device, long offset, long expect, long spinWait, long timeOut);
+
+    static native long spin(long device, long offset, int expect, long spinWait, long timeOut);
+
+    static native long spin(long device, long offset, short expect, long spinWait, long timeOut);
+
+    static native long spin(long device, long offset, byte expect, long spinWait, long timeOut);
 }

@@ -32,6 +32,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class BasicSharedMemoryTest {
 
@@ -40,6 +44,8 @@ public class BasicSharedMemoryTest {
     private File shmemfile;
 
     private SharedMemory memory;
+
+    private ExecutorService executor;
 
     @BeforeClass
     public static void setupJNI() {
@@ -57,6 +63,7 @@ public class BasicSharedMemoryTest {
         memory = LinuxMappedFileSharedMemory.createOrOpen(shmemfile.getAbsolutePath(), 4096);
         shmemfile.deleteOnExit();
         rng.setSeed(0);
+        executor = Executors.newCachedThreadPool();
 
         for (long i = 0; i < memory.getSharedMemorySize(); i++) {
             memory.write(i, (byte) 0);
@@ -65,8 +72,11 @@ public class BasicSharedMemoryTest {
 
     @After
     public void after() {
-        memory.close();
+        if (!memory.isClosed()) {
+            memory.close();
+        }
         shmemfile.delete();
+        executor.shutdownNow();
     }
 
     @Test
@@ -993,4 +1003,75 @@ public class BasicSharedMemoryTest {
             Assert.assertTrue(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS == exc.getCode());
         }
     }
+
+    @Test
+    public void testSpin() throws Throwable {
+        Assert.assertFalse(memory.spin(0, 500, 100, 1000, TimeUnit.MILLISECONDS));
+        executor.submit(new Callable<Object>() {
+
+
+            @Override
+            public Object call() throws Exception {
+                Thread.sleep(300);
+                memory.write(0, 500);
+                return null;
+            }
+        });
+        Assert.assertTrue(memory.spin(0, 500, 100, 3000, TimeUnit.MILLISECONDS));
+        memory.write(0, 444);
+        executor.submit(new Callable<Object>() {
+
+
+            @Override
+            public Object call() throws Exception {
+                Thread.sleep(300);
+                memory.write(0, 500);
+                return null;
+            }
+        });
+        Assert.assertTrue(memory.spinAndSet(0, 500, 100, 100, 3000, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(memory.readInt(0) == 100);
+    }
+
+    @Test
+    public void testSpinCloseWithTimeout() throws Throwable {
+        executor.submit(new Callable<Object>() {
+
+
+            @Override
+            public Object call() throws Exception {
+                Thread.sleep(1000);
+                memory.close();
+                return null;
+            }
+        });
+        try {
+            memory.spin(0, 500, 100, 5000, TimeUnit.MILLISECONDS);
+            Assert.fail();
+        } catch (SharedMemoryException exc) {
+            Assert.assertTrue(exc.getCode() == ErrorCodeEnum.SPIN_CLOSED);
+        }
+    }
+
+    @Test
+    public void testSpinCloseWithoutTimeout() throws Throwable {
+        executor.submit(new Callable<Object>() {
+
+
+            @Override
+            public Object call() throws Exception {
+                Thread.sleep(1000);
+                memory.close();
+                return null;
+            }
+        });
+        try {
+            memory.spin(0, 500, 100, TimeUnit.MILLISECONDS);
+            Assert.fail();
+        } catch (SharedMemoryException exc) {
+            Assert.assertTrue(exc.getCode() == ErrorCodeEnum.SPIN_CLOSED);
+        }
+    }
+
+
 }

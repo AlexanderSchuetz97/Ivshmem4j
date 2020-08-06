@@ -17,16 +17,37 @@
  * in the COPYING file in top level directory of Ivshmem4j.
  * If not, see <https://www.gnu.org/licenses/>.
  */
+#include "../common/util/timeutil.h"
+#include <time.h>
+#include <stdbool.h>
+#include <errno.h>
 
-#include <stdint.h>
+#define NANOSECONDS_PER_MILISECOND 1000000
 
-#ifndef UTIL_COMMON_H_
-#define UTIL_COMMON_H_
+/**
+ * This is for some reason much easier on windows...
+ */
+void sleepMillis(uint64_t aMillis) {
+	uint64_t tempMillisWithoutSeconds = aMillis % 1000;
+	struct timespec tempTime;
+	tempTime.tv_sec = (aMillis - (tempMillisWithoutSeconds)) / 1000;
+	tempTime.tv_nsec = tempMillisWithoutSeconds * NANOSECONDS_PER_MILISECOND;
 
-struct mapped_shared_memory {
-	void * memory;
-	uint64_t size;
-	volatile bool closed;
-};
+	struct timespec tempRem;
+	while(true) {
+		if (nanosleep(&tempTime, &tempRem) == 0) {
+			return;
+		}
 
-#endif /* UTIL_COMMON_H_ */
+		int err = errno;
+
+		if (err == EINTR) {
+			tempTime.tv_sec = tempRem.tv_sec;
+			tempTime.tv_nsec = tempRem.tv_nsec;
+			continue;
+		}
+
+		return;
+	}
+
+}

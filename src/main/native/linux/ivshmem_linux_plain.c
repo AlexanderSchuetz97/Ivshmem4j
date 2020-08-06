@@ -97,6 +97,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
 	}
 
 
+
 	if (tempStat.st_size != 0 || aPreferedSize == 0) {
 		tempMap->map.size = tempStat.st_size;
 	} else {
@@ -115,6 +116,13 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
 			return combineErrorCode(RES_ERROR_SHMEM_FILE_SET_SIZE, err);
 		}
 	}
+
+    //Will cause segfault if mmaped and written too because well size is zero...
+	if (tempMap->map.size == 0) {
+	    close(tempMap->fd);
+        free(tempMap);
+	    return combineErrorCode(RES_FILE_IS_EMPTY, 0);
+    }
 
 	tempMap->map.memory = mmap(0, tempMap->map.size, PROT_READ | PROT_WRITE, MAP_SHARED, tempMap->fd, 0);
 	if (tempMap->map.memory == (void*)-1 || tempMap->map.memory == NULL) {

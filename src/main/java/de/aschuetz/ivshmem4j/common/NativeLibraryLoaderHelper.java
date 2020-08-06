@@ -97,8 +97,15 @@ public class NativeLibraryLoaderHelper {
         }
 
         String tempArch = System.getProperty("os.arch");
-        if (!"amd64".equalsIgnoreCase(tempArch)) {
-            throw new UnsatisfiedLinkError("Cannot load native libraries because the system architecture is not amd64!");
+
+        if (tempArch == null) {
+            throw new UnsatisfiedLinkError("Cannot load native libraries because the processor architecture couldn't be detected!");
+        }
+
+        tempArch = tempArch.toLowerCase();
+
+        if (!"i386".equals(tempArch) && !"amd64".equals(tempArch)) {
+            throw new UnsatisfiedLinkError("Processor architecture is not i386 or amd64 and thus not supported!");
         }
 
         String tempOS = System.getProperty("os.name");
@@ -109,9 +116,9 @@ public class NativeLibraryLoaderHelper {
         tempOS = tempOS.toLowerCase();
         try {
             if (tempOS.contains("linux")) {
-                loadLib(tempFile, "ivshmem4j.so");
+                loadLib(tempFile, "ivshmem4j_" + tempArch + ".so");
             } else if (tempOS.contains("windows")) {
-                loadLib(tempFile, "ivshmem4j.dll");
+                loadLib(tempFile, "ivshmem4j_" + tempArch + ".dll");
             } else {
                 throw new UnsatisfiedLinkError("Operating system is not windows or linux and thus not supported!");
             }

@@ -610,7 +610,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_o
 	switch (tempResult) {
 	case (RES_OK): {
 		jlong *tempHandle = (*env)->GetLongArrayElements(env, aHandle, NULL);
-		tempHandle[0] = (jlong) (void*) tempConnectedDevice;
+		tempHandle[0] = (jlong) (uintptr_t) (void*) tempConnectedDevice;
 		tempHandle[1] = (jlong) tempConnectedDevice->map.peer;
 		tempHandle[2] = (jlong) tempConnectedDevice->map.vector_count;
 		(*env)->ReleaseLongArrayElements(env, aHandle, tempHandle, 0);
@@ -634,7 +634,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_o
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_close(
 		JNIEnv *env, jclass aClazz, jlong aDevicePointer) {
 	struct ivshmem_mapped_device *tempDevice =
-			(struct ivshmem_mapped_device*) (void*) aDevicePointer;
+			(struct ivshmem_mapped_device*) (void*) (uintptr_t) aDevicePointer;
 	if (tempDevice == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -656,7 +656,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_s
 		JNIEnv *env, jclass aClazz, jlong aDevicePointer, jint aVector,
 		jint peer) {
 	struct ivshmem_mapped_device *tempDevice =
-			(struct ivshmem_mapped_device*) (void*) aDevicePointer;
+			(struct ivshmem_mapped_device*) (void*) (uintptr_t) aDevicePointer;
 	if (tempDevice == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -686,7 +686,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_windows_WindowsSharedMemory_p
 	}
 
 	struct ivshmem_mapped_device *tempDevice =
-			(struct ivshmem_mapped_device*) (void*) aDevicePointer;
+			(struct ivshmem_mapped_device*) (void*) (uintptr_t) aDevicePointer;
 	if (tempDevice == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}

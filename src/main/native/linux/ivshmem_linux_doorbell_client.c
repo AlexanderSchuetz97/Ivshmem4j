@@ -888,7 +888,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
 
 	jlong* tempBuf = (*env)->GetLongArrayElements(env, aResult, NULL);
 
-	tempBuf[0] = (jlong) tempConnection;
+	tempBuf[0] = (jlong) (uintptr_t) tempConnection;
 	tempBuf[1] = tempConnection->peer_id;
 	tempBuf[2] = tempConnection->vector_count;
 	tempBuf[3] = tempConnection->mapped.size;
@@ -910,7 +910,7 @@ JNIEXPORT jintArray JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxShare
 		return NULL;
 	}
 
-	struct ivshem_connection* tempConnection = (struct ivshem_connection*)aConnectionPtr;
+	struct ivshem_connection* tempConnection = (struct ivshem_connection*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		jlong* tempLong = (*env)->GetLongArrayElements(env, tempResAr, 0);
 		*tempLong = combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -954,7 +954,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
 	}
 
-	struct ivshem_connection* tempConnection = (struct ivshem_connection*)aConnectionPtr;
+	struct ivshem_connection* tempConnection = (struct ivshem_connection*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -992,7 +992,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMemory_close
   (JNIEnv * env, jclass aClazz, jlong aConnectionPtr) {
-	struct ivshem_connection* tempConnection = (struct ivshem_connection*)aConnectionPtr;
+	struct ivshem_connection* tempConnection = (struct ivshem_connection*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -1014,7 +1014,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
 	}
 
-	struct ivshem_connection* tempConnection = (struct ivshem_connection*)aConnectionPtr;
+	struct ivshem_connection* tempConnection = (struct ivshem_connection*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -1044,7 +1044,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMemory_sendInterrupt
   (JNIEnv * env, jclass aClazz, jlong aConnectionPtr, jint aPeer, jint aVector) {
-	struct ivshem_connection* tempConnection = (struct ivshem_connection*) aConnectionPtr;
+	struct ivshem_connection* tempConnection = (struct ivshem_connection*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1060,7 +1060,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMem
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_doorbell_LinuxSharedMemory_pollInterrupt
   (JNIEnv * env, jclass aClazz, jlong aConnectionPtr, jintArray aInterupt) {
-	struct ivshem_connection* tempConnection = (struct ivshem_connection*) aConnectionPtr;
+	struct ivshem_connection* tempConnection = (struct ivshem_connection*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);

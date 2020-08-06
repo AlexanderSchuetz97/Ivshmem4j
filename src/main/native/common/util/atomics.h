@@ -31,7 +31,9 @@ uint16_t xadd2b(uint16_t* ptr, uint16_t value);
 
 uint32_t xadd4b(uint32_t* ptr, uint32_t value);
 
+
 uint64_t xadd8b(uint64_t* ptr, uint64_t value);
+
 
 bool cmpxchg8b(uint64_t* ptr, uint64_t expect, uint64_t update);
 
@@ -41,7 +43,12 @@ bool cmpxchg2b(uint16_t* ptr, uint16_t expect, uint16_t update);
 
 bool cmpxchg1b(uint8_t* ptr, uint8_t expect, uint8_t update);
 
+#if (defined(__amd64__))
+#ifndef CMPXCHG16B_SUPPORTED
+#define CMPXCHG16B_SUPPORTED
+#endif
 bool cmpxchg16b(void* ptr, uint64_t* value);
+#endif
 
 uint8_t xchg1b(uint8_t* ptr, uint8_t value);
 
@@ -49,6 +56,8 @@ uint16_t xchg2b(uint16_t* ptr, uint16_t value);
 
 uint32_t xchg4b(uint32_t* ptr, uint32_t value);
 
+
 uint64_t xchg8b(uint64_t* ptr, uint64_t value);
+
 
 #endif /* UTIL_ATOMICS_H_ */

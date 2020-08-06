@@ -25,7 +25,7 @@
 
 
 //Prevents a dependancy to GLIBC_2.14...
-#if defined(linux) && (defined(__amd64__) || defined(__i386__))
+#if defined(linux) && (defined(__amd64__))
 asm (".symver memcpy, memcpy@GLIBC_2.2.5");
 #endif
 FFINLINE void* wrap_memcpy(void *destination, const void *source, size_t len) {

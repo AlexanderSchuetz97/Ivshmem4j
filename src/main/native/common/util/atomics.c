@@ -45,15 +45,29 @@ uint32_t FFINLINE xadd4b(uint32_t* ptr, uint32_t value) {
 	return value;
 }
 
+
 uint64_t FFINLINE xadd8b(uint64_t* ptr, uint64_t value) {
+#if (defined(__amd64__))
 	__asm__ __volatile__ ("LOCK; XADD %[value], %[pointer];"
 				: [pointer] "+m" (*ptr), [value] "+r" (value)
 				:
 				: "memory");
 	return value;
+#elif (defined(__i386__))
+	while(true) {
+		uint64_t tempCur = *ptr;
+		bool tempResult = cmpxchg8b(ptr, tempCur, tempCur+value);
+		if (tempResult) {
+			return tempCur;
+		}
+	}
+#else
+#endif
 }
 
+
 bool FFINLINE cmpxchg8b(uint64_t* ptr, uint64_t expect, uint64_t update) {
+#if (defined(__amd64__))
 	register uint64_t accumulator asm ("rax") = expect;
 	bool flag;
 	__asm__ __volatile__ (
@@ -63,6 +77,24 @@ bool FFINLINE cmpxchg8b(uint64_t* ptr, uint64_t expect, uint64_t update) {
 				: [expect] "r" (accumulator), [update] "r" (update)
 				: "cc", "memory");
 	return flag;
+#elif (defined(__i386__))
+
+	register uint32_t eax asm ("eax") = ((uint32_t*)&expect)[0];
+	register uint32_t edx asm ("edx") = ((uint32_t*)&expect)[1];
+	register uint32_t ebx asm ("ebx") = ((uint32_t*)&update)[0];
+	register uint32_t ecx asm ("ecx") = ((uint32_t*)&update)[1];
+	bool flag;
+	__asm__ __volatile__ (
+			"LOCK; CMPXCHG8B %[pointer];"
+			"SETZ %[flag];"
+				: [pointer] "+m" (*ptr), [flag] "=r" (flag)
+				: [expect1] "r" (edx), [expect2] "r" (eax), [update1] "r" (ecx), [update2] "r" (ebx)
+				: "cc", "memory");
+
+	return flag;
+#else
+#error "Unsupported architecture"
+#endif
 }
 
 bool FFINLINE cmpxchg4b(uint32_t* ptr, uint32_t expect, uint32_t update) {
@@ -101,6 +133,7 @@ bool FFINLINE cmpxchg1b(uint8_t* ptr, uint8_t expect, uint8_t update) {
 	return flag;
 }
 
+#if (defined(__amd64__))
 //Exists only as a hint for compiler.
 struct uint128 {
 	char data[16];
@@ -120,6 +153,7 @@ bool FFINLINE cmpxchg16b(void* ptr, uint64_t* value) {
 				: "cc", "memory");
 	return flag;
 }
+#endif
 
 
 
@@ -147,10 +181,24 @@ uint32_t FFINLINE xchg4b(uint32_t* ptr, uint32_t value) {
 	return value;
 }
 
+
 uint64_t FFINLINE xchg8b(uint64_t* ptr, uint64_t value) {
+#if (defined(__amd64__))
 	__asm__ __volatile__ ("LOCK; XCHG %[value], %[pointer];"
 				: [pointer] "+m" (*ptr), [value] "+r" (value)
 				:
 				: "memory");
 	return value;
+#elif (defined(__i386__))
+	while(true) {
+		uint64_t tempCur = *ptr;
+		bool tempResult = cmpxchg8b(ptr, tempCur, value);
+		if (tempResult) {
+			return tempCur;
+		}
+	}
+#else
+#error "Unsupported architecture"
+#endif
 }
+

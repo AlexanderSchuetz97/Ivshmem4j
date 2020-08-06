@@ -47,10 +47,13 @@ public class BasicSharedMemoryTest {
 
     private ExecutorService executor;
 
+    private static boolean i386 = false;
+
     @BeforeClass
     public static void setupJNI() {
         System.out.println("These Tests might take a lot of time!");
         NativeLibraryLoaderHelper.loadNativeLibraries();
+        i386 = "i386".equalsIgnoreCase(System.getProperty("os.arch"));
     }
 
     @Before
@@ -218,7 +221,13 @@ public class BasicSharedMemoryTest {
 
     @Test
     public void xadd8Byte() throws Throwable {
-        for (long i = 0; i + 7 < memory.getSharedMemorySize(); i++) {
+        int inc = 1;
+
+        if (i386) {
+            inc = 8;
+        }
+
+        for (long i = 0; i + 7 < memory.getSharedMemorySize(); i += inc) {
             memory.write(i, (long) 0);
             for (long j = 0; j <= 0xffff; j++) {
                 long aByte = memory.getAndAdd(i, (long) 1);
@@ -277,7 +286,12 @@ public class BasicSharedMemoryTest {
 
     @Test
     public void cmpxchg8b() throws Throwable {
-        for (long i = 0; i + 7 < memory.getSharedMemorySize(); i++) {
+        int inc = 1;
+        if (i386) {
+            inc = 8;
+        }
+
+        for (long i = 0; i + 7 < memory.getSharedMemorySize(); i += inc) {
             memory.write(i, (long) 0);
             for (long j = 0; j < 0xffff; j++) {
                 Assert.assertTrue(memory.compareAndSet(i, j, j + 1));
@@ -293,8 +307,77 @@ public class BasicSharedMemoryTest {
     }
 
     @Test
+    public void compxchg16b() throws Throwable {
+
+        byte[] buf = new byte[16];
+        byte[] buf2 = new byte[16];
+        byte[] buf3 = new byte[32];
+
+        if (i386) {
+            try {
+                memory.compareAndSet(0, buf3);
+                Assert.fail();
+            } catch (SharedMemoryException exc) {
+                Assert.assertEquals(ErrorCodeEnum.UNSUPPORTED_OPERATION, exc.getCode());
+            }
+            return;
+        }
+
+
+        for (long i = 0; i + 15 < memory.getSharedMemorySize(); i += 16) {
+            rng.nextBytes(buf);
+            rng.nextBytes(buf2);
+            System.arraycopy(buf, 0, buf3, 0, buf.length);
+            System.arraycopy(buf2, 0, buf3, buf.length, buf2.length);
+            memory.write(i, buf);
+
+
+            Assert.assertTrue(memory.compareAndSet(i, buf3));
+
+            memory.read(i, buf, 0, buf.length);
+            Assert.assertTrue(Arrays.equals(buf, buf2));
+        }
+    }
+
+    @Test
+    public void testI386missalignment() {
+        if (!i386) {
+            return;
+        }
+
+        try {
+            memory.getAndSet(1, (long) 1);
+            Assert.fail();
+        } catch (SharedMemoryException e) {
+            Assert.assertEquals(e.getCode(), ErrorCodeEnum.OFFSET_UNALIGNED);
+        }
+
+
+        try {
+            memory.compareAndSet(1, (long) 1, (long) 1);
+            Assert.fail();
+        } catch (SharedMemoryException e) {
+            Assert.assertEquals(e.getCode(), ErrorCodeEnum.OFFSET_UNALIGNED);
+        }
+
+
+        try {
+            memory.getAndAdd(1, (long) 1);
+            Assert.fail();
+        } catch (SharedMemoryException e) {
+            Assert.assertEquals(e.getCode(), ErrorCodeEnum.OFFSET_UNALIGNED);
+        }
+    }
+
+    @Test
     public void xchg8b() throws Throwable {
-        for (long i = 0; i + 7 < memory.getSharedMemorySize(); i++) {
+        int increment = 1;
+
+        if (i386) {
+            increment = 8;
+        }
+
+        for (long i = 0; i + 7 < memory.getSharedMemorySize(); i += increment) {
             long tempBase = rng.nextLong();
             long tempSet = rng.nextLong();
             memory.write(i, tempBase);
@@ -302,6 +385,7 @@ public class BasicSharedMemoryTest {
             Assert.assertEquals(tempSet, memory.readLong(i));
         }
     }
+
 
     @Test
     public void xchg4b() throws Throwable {
@@ -738,33 +822,55 @@ public class BasicSharedMemoryTest {
             memory.compareAndSet(memory.getSharedMemorySize() - 15, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
-            Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            if (i386) {
+                Assert.assertEquals(ErrorCodeEnum.UNSUPPORTED_OPERATION, exc.getCode());
+            } else {
+                Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            }
         }
         try {
             memory.compareAndSet(memory.getSharedMemorySize(), tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
-            Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            if (i386) {
+                Assert.assertEquals(ErrorCodeEnum.UNSUPPORTED_OPERATION, exc.getCode());
+            } else {
+                Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            }
         }
         try {
             memory.compareAndSet(memory.getSharedMemorySize() + 1, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
-            Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            if (i386) {
+                Assert.assertEquals(ErrorCodeEnum.UNSUPPORTED_OPERATION, exc.getCode());
+            } else {
+                Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            }
         }
         try {
             memory.compareAndSet(-64, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
-            Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            if (i386) {
+                Assert.assertEquals(ErrorCodeEnum.UNSUPPORTED_OPERATION, exc.getCode());
+            } else {
+                Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            }
         }
         try {
             memory.compareAndSet(-7, tempBuf);
             Assert.fail();
         } catch (SharedMemoryException exc) {
-            Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            if (i386) {
+                Assert.assertEquals(ErrorCodeEnum.UNSUPPORTED_OPERATION, exc.getCode());
+            } else {
+                Assert.assertEquals(ErrorCodeEnum.MEMORY_OUT_OF_BOUNDS, exc.getCode());
+            }
         }
-        memory.compareAndSet(memory.getSharedMemorySize() - 16, tempBuf);
+        if (!i386) {
+            memory.compareAndSet(memory.getSharedMemorySize() - 16, tempBuf);
+        }
     }
 
     @Test

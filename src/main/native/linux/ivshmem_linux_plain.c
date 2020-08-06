@@ -135,7 +135,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
 
 	jlong* tempBuf = (*env)->GetLongArrayElements(env, aResult, NULL);
 
-	tempBuf[0] = (jlong) tempMap;
+	tempBuf[0] = (jlong) (uintptr_t) tempMap;
 	tempBuf[1] = tempMap->map.size;
 
 	(*env)->ReleaseLongArrayElements(env, aResult, tempBuf, JNI_OK);
@@ -150,7 +150,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_linux_plain_LinuxSharedMemory_close
   (JNIEnv * env, jclass clazz, jlong aFilePointer ) {
-	struct mapped_file* tempMap = (struct mapped_file*) aFilePointer;
+	struct mapped_file* tempMap = (struct mapped_file*) (uintptr_t) aFilePointer;
 	if (tempMap == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}

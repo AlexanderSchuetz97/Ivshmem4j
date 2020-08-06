@@ -17,10 +17,10 @@ The file "mvnw" is part of the maven-wrapper project, released under the Apache 
 See https://github.com/takari/maven-wrapper for more information regarding maven-wrapper.
 ## Supported operating systems
 ##### Host:
-* Linux (amd64)
+* Linux (amd64/i386)
 ##### Guest:
-* Windows (amd64)
-* Linux (amd64)
+* Windows (amd64/i386)
+* Linux (amd64/i386)
 
 ##### Limitations of Linux guests:
 Since there is no stable linux kernel module to interact with the emulated ivshmem pci device 
@@ -195,3 +195,5 @@ Inital release
 1. Fixed a bug that prevented a call to "close" from actually closing the file descriptors and freeing allocated native memory.
 2. Moved spin/spinAndSet to native code for better performance (less JNI calls)
 3. Added more "convenience" methods for spin/spinAndSet when calling without a timeout.
+4. Added support for i386 (x86 32 bit) jvms on linux(guest+host) and windows(guest).
+5. Fixed a bug with compareAndSet (16 bytes CMPXCHG16B) where unaligned memory access will cause a segmentation fault and crash the jvm.

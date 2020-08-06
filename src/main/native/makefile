@@ -18,20 +18,19 @@
 # If not, see <https://www.gnu.org/licenses/>.
 #
 
-#Uncomment if not using env variables
-#LINUX_CC=gcc
-#LINUX_JDK=/opt/jdk1.7.0_80
-#WINDOWS_CC=/usr/bin/x86_64-w64-mingw32-gcc-win32
-#WINDOWS_JDK=/opt/jdk7Windows
-
-
 BUILD_BASE_DIR=build
 
-WINDOWS_BUILD_DIR=$(BUILD_BASE_DIR)/windows
-WINDOWS_BUILD_DIR_COMMON=$(WINDOWS_BUILD_DIR)/common
+WINDOWS_BUILD_DIR_AMD64=$(BUILD_BASE_DIR)/windows_amd64
+WINDOWS_BUILD_DIR_AMD64_COMMON=$(WINDOWS_BUILD_DIR_AMD64)/common
 
-LINUX_BUILD_DIR=$(BUILD_BASE_DIR)/linux
-LINUX_BUILD_DIR_COMMON=$(LINUX_BUILD_DIR)/common
+WINDOWS_BUILD_DIR_I386=$(BUILD_BASE_DIR)/windows_i386
+WINDOWS_BUILD_DIR_I386_COMMON=$(WINDOWS_BUILD_DIR_I386)/common
+
+LINUX_BUILD_DIR_AMD64=$(BUILD_BASE_DIR)/linux_amd64
+LINUX_BUILD_DIR_AMD64_COMMON=$(LINUX_BUILD_DIR_AMD64)/common
+
+LINUX_BUILD_DIR_I386=$(BUILD_BASE_DIR)/linux_i386
+LINUX_BUILD_DIR_I386_COMMON=$(LINUX_BUILD_DIR_I386)/common
 
 TARGET_DIR=../resources
 
@@ -51,75 +50,158 @@ WINDOWS_HEADERS=$(shell find windows -name "*.h")
 LINUX_SOURCES=$(shell find linux -name "*.c")
 LINUX_HEADERS=$(shell find linux -name "*.h")
 
-WINDOWS_OBJECTS=$(addprefix $(WINDOWS_BUILD_DIR)/,$(patsubst %.c,%.o,$(notdir $(WINDOWS_SOURCES)))) $(addprefix $(WINDOWS_BUILD_DIR_COMMON)/,$(patsubst %.c,%.o,$(notdir $(COMMON_SOURCES))))
-LINUX_OBJECTS=$(addprefix $(LINUX_BUILD_DIR)/,$(patsubst %.c,%.o,$(notdir $(LINUX_SOURCES)))) $(addprefix $(LINUX_BUILD_DIR_COMMON)/,$(patsubst %.c,%.o,$(notdir $(COMMON_SOURCES))))
+WINDOWS_OBJECTS_AMD64=$(addprefix $(WINDOWS_BUILD_DIR_AMD64)/,$(patsubst %.c,%.o,$(notdir $(WINDOWS_SOURCES)))) $(addprefix $(WINDOWS_BUILD_DIR_AMD64_COMMON)/,$(patsubst %.c,%.o,$(notdir $(COMMON_SOURCES))))
+WINDOWS_OBJECTS_I386=$(addprefix $(WINDOWS_BUILD_DIR_I386)/,$(patsubst %.c,%.o,$(notdir $(WINDOWS_SOURCES)))) $(addprefix $(WINDOWS_BUILD_DIR_I386_COMMON)/,$(patsubst %.c,%.o,$(notdir $(COMMON_SOURCES))))
+
+LINUX_OBJECTS_AMD64=$(addprefix $(LINUX_BUILD_DIR_AMD64)/,$(patsubst %.c,%.o,$(notdir $(LINUX_SOURCES)))) $(addprefix $(LINUX_BUILD_DIR_AMD64_COMMON)/,$(patsubst %.c,%.o,$(notdir $(COMMON_SOURCES))))
+LINUX_OBJECTS_I386=$(addprefix $(LINUX_BUILD_DIR_I386)/,$(patsubst %.c,%.o,$(notdir $(LINUX_SOURCES)))) $(addprefix $(LINUX_BUILD_DIR_I386_COMMON)/,$(patsubst %.c,%.o,$(notdir $(COMMON_SOURCES))))
 
 
-$(WINDOWS_BUILD_DIR_COMMON)/%.o: common/%.c $(COMMON_HEADERS)
-	@echo "Compiling common file $@ for windows" 	
-	@mkdir -p $(WINDOWS_BUILD_DIR_COMMON)
-	$(WINDOWS_CC) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+#######################################################################################################################
+# WINDOWS AMD 64
+#######################################################################################################################
 
-$(WINDOWS_BUILD_DIR_COMMON)/%.o: common/**/%.c $(COMMON_HEADERS)
-	@echo "Compiling common file $@ for windows" 	
-	@mkdir -p $(WINDOWS_BUILD_DIR_COMMON)
-	$(WINDOWS_CC) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+$(WINDOWS_BUILD_DIR_AMD64_COMMON)/%.o: common/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for windows amd64"
+	@mkdir -p $(WINDOWS_BUILD_DIR_AMD64_COMMON)
+	$(WINDOWS_CC_AMD64) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+
+$(WINDOWS_BUILD_DIR_AMD64_COMMON)/%.o: common/**/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for windows amd64"
+	@mkdir -p $(WINDOWS_BUILD_DIR_AMD64_COMMON)
+	$(WINDOWS_CC_AMD64) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
 
 
-$(WINDOWS_BUILD_DIR)/%.o: windows/%.c $(COMMON_HEADERS) $(WINDOWS_HEADERS)
-	@echo "Compiling windows file $@"
-	@mkdir -p $(WINDOWS_BUILD_DIR)
-	$(WINDOWS_CC) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+$(WINDOWS_BUILD_DIR_AMD64)/%.o: windows/%.c $(COMMON_HEADERS) $(WINDOWS_HEADERS)
+	@echo "Compiling windows file $@ for amd64"
+	@mkdir -p $(WINDOWS_BUILD_DIR_AMD64)
+	$(WINDOWS_CC_AMD64) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
 
-$(WINDOWS_BUILD_DIR)/%.o: windows/**/%.c $(COMMON_HEADERS) $(WINDOWS_HEADERS)
-	@echo "Compiling windows file $@"
-	@mkdir -p $(WINDOWS_BUILD_DIR)
-	$(WINDOWS_CC) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+$(WINDOWS_BUILD_DIR_AMD64)/%.o: windows/**/%.c $(COMMON_HEADERS) $(WINDOWS_HEADERS)
+	@echo "Compiling windows file $@ for amd64"
+	@mkdir -p $(WINDOWS_BUILD_DIR_AMD64)
+	$(WINDOWS_CC_AMD64) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
 
-$(LINUX_BUILD_DIR_COMMON)/%.o: common/%.c $(COMMON_HEADERS)
-	@echo "Compiling common file $@ for linux" 	
-	@mkdir -p $(LINUX_BUILD_DIR_COMMON)
-	$(LINUX_CC) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+#######################################################################################################################
+# WINDOWS I386
+#######################################################################################################################
 
-$(LINUX_BUILD_DIR_COMMON)/%.o: common/**/%.c $(COMMON_HEADERS)
-	@echo "Compiling common file $@ for linux" 	
-	@mkdir -p $(LINUX_BUILD_DIR_COMMON)
-	$(LINUX_CC) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+$(WINDOWS_BUILD_DIR_I386_COMMON)/%.o: common/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for windows i386"
+	@mkdir -p $(WINDOWS_BUILD_DIR_I386_COMMON)
+	$(WINDOWS_CC_I386) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
 
-$(LINUX_BUILD_DIR)/%.o: linux/%.c $(COMMON_HEADERS) $(LINUX_HEADERS)
-	@echo "Compiling linux file $@"
-	@mkdir -p $(LINUX_BUILD_DIR)
-	$(LINUX_CC) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+$(WINDOWS_BUILD_DIR_I386_COMMON)/%.o: common/**/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for windows i386"
+	@mkdir -p $(WINDOWS_BUILD_DIR_I386_COMMON)
+	$(WINDOWS_CC_I386) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
 
-$(LINUX_BUILD_DIR)/%.o: linux/**/%.c $(COMMON_HEADERS) $(LINUX_HEADERS)
-	@echo "Compiling linux file $@"
-	@mkdir -p $(LINUX_BUILD_DIR)
-	$(LINUX_CC) -O3 -c -o $@ $< $(LINUX_CFLAGS)
 
-both: windows linux
+$(WINDOWS_BUILD_DIR_I386)/%.o: windows/%.c $(COMMON_HEADERS) $(WINDOWS_HEADERS)
+	@echo "Compiling windows file $@ for i386"
+	@mkdir -p $(WINDOWS_BUILD_DIR_I386)
+	$(WINDOWS_CC_I386) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+
+$(WINDOWS_BUILD_DIR_I386)/%.o: windows/**/%.c $(COMMON_HEADERS) $(WINDOWS_HEADERS)
+	@echo "Compiling windows file $@ for i386"
+	@mkdir -p $(WINDOWS_BUILD_DIR_I386)
+	$(WINDOWS_CC_I386) -O3 -c -o $@ $< $(WINDOWS_CFLAGS)
+
+#######################################################################################################################
+# LINUX AMD 64
+#######################################################################################################################
+
+$(LINUX_BUILD_DIR_AMD64_COMMON)/%.o: common/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for linux amd64"
+	@mkdir -p $(LINUX_BUILD_DIR_AMD64_COMMON)
+	$(LINUX_CC_AMD64) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+$(LINUX_BUILD_DIR_AMD64_COMMON)/%.o: common/**/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for linux amd64"
+	@mkdir -p $(LINUX_BUILD_DIR_AMD64_COMMON)
+	$(LINUX_CC_AMD64) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+$(LINUX_BUILD_DIR_AMD64)/%.o: linux/%.c $(COMMON_HEADERS) $(LINUX_HEADERS)
+	@echo "Compiling linux file $@ for amd64"
+	@mkdir -p $(LINUX_BUILD_DIR_AMD64)
+	$(LINUX_CC_AMD64) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+$(LINUX_BUILD_DIR_AMD64)/%.o: linux/**/%.c $(COMMON_HEADERS) $(LINUX_HEADERS)
+	@echo "Compiling linux file $@ for amd64"
+	@mkdir -p $(LINUX_BUILD_DIR_AMD64)
+	$(LINUX_CC_AMD64) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+#######################################################################################################################
+# LINUX I386
+#######################################################################################################################
+
+$(LINUX_BUILD_DIR_I386_COMMON)/%.o: common/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for linux i386"
+	@mkdir -p $(LINUX_BUILD_DIR_I386_COMMON)
+	$(LINUX_CC_I386) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+$(LINUX_BUILD_DIR_I386_COMMON)/%.o: common/**/%.c $(COMMON_HEADERS)
+	@echo "Compiling common file $@ for linux i386"
+	@mkdir -p $(LINUX_BUILD_DIR_I386_COMMON)
+	$(LINUX_CC_I386) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+$(LINUX_BUILD_DIR_I386)/%.o: linux/%.c $(COMMON_HEADERS) $(LINUX_HEADERS)
+	@echo "Compiling linux file $@ for i386"
+	@mkdir -p $(LINUX_BUILD_DIR_I386)
+	$(LINUX_CC_I386) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+$(LINUX_BUILD_DIR_I386)/%.o: linux/**/%.c $(COMMON_HEADERS) $(LINUX_HEADERS)
+	@echo "Compiling linux file $@ for i386"
+	@mkdir -p $(LINUX_BUILD_DIR_I386)
+	$(LINUX_CC_I386) -O3 -c -o $@ $< $(LINUX_CFLAGS)
+
+#######################################################################################################################
+# Targets
+#######################################################################################################################
+
+all: windows_amd64 windows_i386 linux_amd64 linux_i386
 	rm -rf $(BUILD_BASE_DIR)
 	@echo "DONE"
 
-windows: $(WINDOWS_OBJECTS)
-	@echo "Linking windows dynamic linker library"
+windows_amd64: $(WINDOWS_OBJECTS_AMD64)
+	@echo ""
+	@echo "Linking windows dynamic linker library for amd64"
 	@mkdir -p $(TARGET_DIR)
-	$(WINDOWS_CC) -shared -o $(TARGET_DIR)/ivshmem4j.dll $(WINDOWS_OBJECTS) $(WINDOWS_LIBS)
+	$(WINDOWS_CC_AMD64) -shared -o $(TARGET_DIR)/ivshmem4j_amd64.dll $(WINDOWS_OBJECTS_AMD64) $(WINDOWS_LIBS)
+	@echo ""
 
-linux: $(LINUX_OBJECTS)
-	@echo "Linking linux shared object"
+windows_i386: $(WINDOWS_OBJECTS_I386)
+	@echo ""
+	@echo "Linking windows dynamic linker library for i386"
 	@mkdir -p $(TARGET_DIR)
-	$(LINUX_CC) -shared -o $(TARGET_DIR)/ivshmem4j.so $(LINUX_OBJECTS)
+	$(WINDOWS_CC_I386) -shared -o $(TARGET_DIR)/ivshmem4j_i386.dll $(WINDOWS_OBJECTS_I386) $(WINDOWS_LIBS)
+	@echo ""
+
+linux_amd64: $(LINUX_OBJECTS_AMD64)
+	@echo ""
+	@echo "Linking linux shared object for amd64"
+	@mkdir -p $(TARGET_DIR)
+	$(LINUX_CC_AMD64) -shared -o $(TARGET_DIR)/ivshmem4j_amd64.so $(LINUX_OBJECTS_AMD64)
+	@echo ""
+
+linux_i386: $(LINUX_OBJECTS_I386)
+	@echo ""
+	@echo "Linking linux shared object for i386"
+	@mkdir -p $(TARGET_DIR)
+	$(LINUX_CC_I386) -shared -o $(TARGET_DIR)/ivshmem4j_i386.so $(LINUX_OBJECTS_I386)
+	@echo ""
 
 clean:
-	rm -rf $(TARGET_DIR)/ivshmem4j.dll
-	rm -rf $(TARGET_DIR)/ivshmem4j.so
+	rm -rf $(TARGET_DIR)/ivshmem4j_i386.dll
+	rm -rf $(TARGET_DIR)/ivshmem4j_amd64.dll
+	rm -rf $(TARGET_DIR)/ivshmem4j_amd64.so
 	rm -rf $(BUILD_BASE_DIR)
 	@echo "DONE"
 
 info:
 	@echo "INFO"
-	@echo "Linux compiler $(LINUX_CC)"
-	@echo "Windows compiler $(WINDOWS_CC)"
+	@echo "Linux compiler $(LINUX_CC_AMD64)"
+	@echo "Windows compiler $(WINDOWS_CC_AMD64)"
 	@echo "Linux JDK Path $(LINUX_JDK)"
 	@echo "Windows JDK Path $(WINDOWS_JDK)"
 	@echo "Common Sources $(COMMON_SOURCES)"
@@ -128,8 +210,8 @@ info:
 	@echo "Windows Headers $(WINDOWS_HEADERS)"
 	@echo "Linux Sources $(LINUX_SOURCES)"
 	@echo "Linux Headers $(LINUX_HEADERS)"
-	@echo "Windows Objects $(WINDOWS_OBJECTS)"
-	@echo "Linux Objects $(LINUX_OBJECTS)"
+	@echo "Windows Objects $(WINDOWS_OBJECTS_AMD64)"
+	@echo "Linux Objects $(LINUX_OBJECTS_AMD64)"
 	
 
 .PHONY: clean

@@ -35,11 +35,16 @@ touch config.sh
 echo "#!/usr/bin/env bash" > config.sh
 echo "#You may want to change this to use the javah command from the LINUX_JDK if your system jdk is not the same as your LINUX_JDK" >> config.sh
 echo "export JAVAH_COMMAND=javah" >> config.sh
-echo "export LINUX_CC=gcc" >> config.sh
+echo "#If you are running a normal 64 bit linux change this to just gcc if you dont have gcc multi-lib installed" >> config.sh
+echo "export LINUX_CC_AMD64=/usr/bin/x86_64-linux-gnu-gcc" >> config.sh
+echo "export LINUX_CC_I386=/usr/bin/i686-linux-gnu-gcc" >> config.sh
 echo "export LINUX_JDK=" >> config.sh
 echo "#You will have to change this unless you are using mingw-cross to compile the windows dll" >> config.sh
-echo "export WINDOWS_CC=/usr/bin/x86_64-w64-mingw32-gcc-win32" >> config.sh
+echo "export WINDOWS_CC_AMD64=/usr/bin/x86_64-w64-mingw32-gcc-win32" >> config.sh
+echo "export WINDOWS_CC_I386=/usr/bin/i686-w64-mingw32-gcc" >> config.sh
 echo "export WINDOWS_JDK=" >> config.sh
+echo "#You may change this to any combination of the following: \"windows_amd64 windows_i386 linux_amd64 linux_i386\"" >> config.sh
+echo "export BUILD_TARGETS=\"all\"" >> config.sh
 chmod +x config.sh
 exit -1
 fi
@@ -47,8 +52,8 @@ fi
 #Cleanup
 rm -rf src/main/native/common/jni
 mkdir -p src/main/native/common/jni
-rm -f src/main/resources/ivshmem4j.dll
-rm -f src/main/resources/ivshmem4j.so
+rm -f src/main/resources/*.dll
+rm -f src/main/resources/*.so
 rm -f src/main/native_src.tar
 rm -f src/resources/native_src.tar
 
@@ -69,21 +74,48 @@ tar -cvf native_src.tar native
 mv native_src.tar resources/
 cd native
 
-make both
+make $BUILD_TARGETS
 cd ../resources/
-if [ -f ivshmem4j.dll ]
-then
-echo "Building the windows dll succeeded"
-else
-echo "Building the windows dll failed!"
-exit -1
+
+#Confirm success
+
+if [[ $BUILD_TARGETS == *"windows_amd64"* ]] || [ $BUILD_TARGETS == "all" ]; then
+    if [ -f ivshmem4j_amd64.dll ]; then
+        echo "Building the windows amd64 dll succeeded"
+    else
+        echo "Building the windows amd64 dll failed!"
+        exit -1
+    fi
 fi
-if [ -f ivshmem4j.so ]
-then
-echo "Building the linux so succeeded"
-else
-echo "Building the linux so failed!"
-exit -1
+
+
+if [[ $BUILD_TARGETS == *"windows_i386"* ]] || [ $BUILD_TARGETS == "all" ]; then
+    if [ -f ivshmem4j_i386.dll ]; then
+        echo "Building the windows i386 dll succeeded"
+    else
+        echo "Building the windows i386 dll failed!"
+        exit -1
+    fi
+fi
+
+
+if [[ $BUILD_TARGETS == *"linux_amd64"* ]] || [ $BUILD_TARGETS == "all" ]; then
+    if [ -f ivshmem4j_amd64.so ]; then
+        echo "Building the linux amd64 so succeeded"
+    else
+        echo "Building the linux amd64 so failed!"
+        exit -1
+    fi
+fi
+
+
+if [[ $BUILD_TARGETS == *"linux_i386"* ]] || [ $BUILD_TARGETS == "all" ]; then
+    if [ -f ivshmem4j_i386.so ]; then
+        echo "Building the linux i386 so succeeded"
+    else
+        echo "Building the linux i386 so failed!"
+        exit -1
+    fi
 fi
 
 cd ../../../

@@ -42,10 +42,13 @@ public enum ErrorCodeEnum implements ErrorCode {
     INVALID_CONNECTION_POINTER(29, "The native handle is null"),
     BUFFER_OUT_OF_BOUNDS(31, "A buffer that was passed as argument is out of bounds"),
     MEMORY_OUT_OF_BOUNDS(32, "The shared memory is out of bounds"),
-    CMPXCHG_FAILED(34, "Zero flag was not write after CMPXCHG instruction"),
+    CMPXCHG_FAILED(34, "Zero flag was not set after CMPXCHG instruction"),
     OPEN_FAILURE(35, "Failed to open the Shared Memory file or device Handle"),
     SPIN_CLOSED(44, "Shared memory was closed while spinning"),
     SPIN_TIMEOUT(45, "Timeout while spinning"),
+    UNSUPPORTED_OPERATION(46, "Operation not supported by current CPU architecture"),
+    OFFSET_UNALIGNED(47, "Operation requires aligned offset but was unaligned. (offset has to be dividable by operand size)"),
+
 
     //Linux common
     ERROR_SHMEM_FSTAT(24, "Unable to fstat the shared memory file descriptor"),

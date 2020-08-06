@@ -197,6 +197,9 @@ public interface SharedMemory extends Closeable {
 
     /**
      * adds the parameter to the long at offset. returns the previous value. this operation is atomic.
+     *
+     * This operations requires offset alignment(offset must be dividable by 8) on i386 (x86 - 32 bit) jvms
+     * otherwise an exceptions is thrown.
      */
     long getAndAdd(long offset, long aLong) throws SharedMemoryException;
 
@@ -217,6 +220,9 @@ public interface SharedMemory extends Closeable {
 
     /**
      * sets the value at offset to the given long. returns the previous value. this operation is atomic.
+     *
+     * This operations requires offset alignment(offset must be dividable by 8) on i386 (x86 - 32 bit) jvms
+     * otherwise an exceptions is thrown.
      */
     long getAndSet(long offset, long aLong) throws SharedMemoryException;
 
@@ -238,6 +244,9 @@ public interface SharedMemory extends Closeable {
     /*
      * compares the value at offset with expect if equal sets the value at offset to update and returns true otherwise return false.
      * this operation is atomic.
+     *
+     * This operations requires offset alignment(offset must be dividable by 8) on i386 (x86 - 32 bit) jvms
+     * otherwise an exceptions is thrown.
      */
     boolean compareAndSet(long offset, long expect, long update) throws SharedMemoryException;
 
@@ -262,6 +271,8 @@ public interface SharedMemory extends Closeable {
     /*
      * compares the value of offset with the first 16 bytes of data. if equal write the data at offset to the second 16 bytes of data and return true otherwise return false.
      * this operation is atomic. data must be exactly 32 bytes long. CPU Must support CMPXCHG16B (CPU's that can run windows 10 support this).
+     *
+     * This operation will always throw an exception i386 (x86 - 32 bit) jvms because the cpu instructions set does not support it.
      */
     boolean compareAndSet(long offset, byte[] data) throws SharedMemoryException;
 

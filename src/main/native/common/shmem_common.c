@@ -38,7 +38,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyteArray aBuffer, jint aBufferOffset, jint aLen) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -79,7 +79,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyte aByte) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -105,7 +105,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jint aInt) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -131,7 +131,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jlong aLong) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -157,7 +157,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jfloat aFloat) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -183,7 +183,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jdouble aDouble) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -209,7 +209,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_wri
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jshort aShort) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -235,7 +235,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyteArray aBuffer, jint aBufferOffset, jint aLen) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -280,7 +280,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -317,7 +317,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -355,7 +355,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -393,7 +393,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -430,7 +430,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -467,7 +467,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -500,12 +500,14 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_rea
  */
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_getAndSet__JJ_3J
 	(JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jlongArray aLong) {
+
+
 	if (aLong == NULL || (*env)->GetArrayLength(env, aLong) != 1) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -515,6 +517,12 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(jlong)) {
 		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
 	}
+
+#if defined(__i386__)
+	if (tempOffset % 8 != 0)  {
+		return combineErrorCode(RES_OFFSET_UNALIGNED, 0);
+	}
+#endif
 
 
 	void *tempResolvedBuffer = (void*) (*env)->GetPrimitiveArrayCritical(env,
@@ -544,7 +552,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -582,7 +590,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -621,7 +629,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -660,7 +668,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -670,6 +678,12 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(jlong)) {
 		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
 	}
+
+#if defined(__i386__)
+	if (tempOffset % 8 != 0)  {
+		return combineErrorCode(RES_OFFSET_UNALIGNED, 0);
+	}
+#endif
 
 	void *tempResolvedBuffer = (void*) (*env)->GetPrimitiveArrayCritical(env,
 			aLong, 0);
@@ -697,7 +711,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -733,7 +747,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -770,7 +784,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -780,6 +794,8 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_get
 	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(jbyte)) {
 		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
 	}
+
+
 
 	void *tempResolvedBuffer = (void*) (*env)->GetPrimitiveArrayCritical(env,
 			aByte, 0);
@@ -803,7 +819,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jlong aExpect, jlong aUpdate) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -813,6 +829,12 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(jlong)) {
 		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
 	}
+
+#if defined(__i386__)
+	if (tempOffset % 8 != 0)  {
+		return combineErrorCode(RES_OFFSET_UNALIGNED, 0);
+	}
+#endif
 
 	uint64_t *tempTarget = (uint64_t*) (tempConnection->memory + tempOffset);
 
@@ -832,7 +854,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jint aExpect, jint aUpdate) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -861,7 +883,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jshort aExpect, jshort aUpdate) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -890,7 +912,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 		JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyte aExpect, jbyte aUpdate) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -918,12 +940,13 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_compareAndSet__JJ_3B
    (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset,
 		jbyteArray aData) {
+#ifdef CMPXCHG16B_SUPPORTED
 	if (aData == NULL || (*env)->GetArrayLength(env, aData) != 32) {
 		return combineErrorCode(RES_INVALID_ARGUMENTS, 0);
 	}
 
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -932,6 +955,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 
 	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + 16) {
 		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
+	}
+
+	if (tempOffset % 16 != 0)  {
+		return combineErrorCode(RES_OFFSET_UNALIGNED, 0);
 	}
 
 	void *tempTarget = (tempConnection->memory + tempOffset);
@@ -949,6 +976,10 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 	(*env)->ReleasePrimitiveArrayCritical(env, aData, tempResolvedBuffer,
 			JNI_ABORT);
 	return combineErrorCode(RES_CMPXCHG_FAILED, 0);
+#else
+	return combineErrorCode(RES_UNSUPPORTED, 0);
+#endif
+
 }
 
 /*
@@ -959,7 +990,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_com
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_memset
   (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jbyte aValue, jlong aLen) {
 	struct mapped_shared_memory *tempConnection =
-			(struct mapped_shared_memory*) aConnectionPtr;
+			(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
 	}
@@ -993,7 +1024,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_mem
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_markClosed
   (JNIEnv *env, jclass aClazz, jlong aConnectionPtr) {
 	struct mapped_shared_memory *tempConnection =
-				(struct mapped_shared_memory*) aConnectionPtr;
+				(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1012,7 +1043,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_mar
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJJJJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jlong aExpect, jlong aUpdate, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1025,6 +1056,12 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 	if (tempConnection->size <= tempOffset || tempConnection->size < tempOffset + sizeof(uint64_t) || tempOffset + sizeof(uint64_t) < tempOffset) {
 		return combineErrorCode(RES_MEMORY_OUT_OF_BOUNDS, 0);
 	}
+
+#if defined(__i386__)
+	if (tempOffset % 8 != 0)  {
+		return combineErrorCode(RES_OFFSET_UNALIGNED, 0);
+	}
+#endif
 
 
 	uint64_t tempCurrent;
@@ -1068,7 +1105,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJIIJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jint aExpect, jint aUpdate, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1124,7 +1161,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJSSJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jshort aExpect, jshort aUpdate, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1180,7 +1217,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spinAndSet__JJBBJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jbyte aExpect, jbyte aUpdate, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1236,7 +1273,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJJJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jlong aExpect, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1291,7 +1328,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJIJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jint aExpect, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1346,7 +1383,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJSJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jshort aExpect, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);
@@ -1401,7 +1438,7 @@ JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spi
 JNIEXPORT jlong JNICALL Java_de_aschuetz_ivshmem4j_common_CommonSharedMemory_spin__JJBJJ
 (JNIEnv *env, jclass aClazz, jlong aConnectionPtr, jlong aOffset, jbyte aExpect, jlong aSpinWait, jlong aTimeout) {
 	struct mapped_shared_memory *tempConnection =
-					(struct mapped_shared_memory*) aConnectionPtr;
+					(struct mapped_shared_memory*) (uintptr_t) aConnectionPtr;
 
 	if (tempConnection == NULL) {
 		return combineErrorCode(RES_INVALID_CONNECTION_POINTER, 0);

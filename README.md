@@ -58,7 +58,7 @@ JNI headers for Windows are generated using the linux JDK's javah command to avo
 Building:
 * clone the git repository
 ````
-git clone -b 1.0 https://github.com/AlexanderSchuetz97/Ivshmem4j.git
+git clone -b 1.1 https://github.com/AlexanderSchuetz97/Ivshmem4j.git
 ````
 * run: 
 ````
@@ -121,6 +121,7 @@ See Limitations of Linux guests.
 // Red Hat, Inc. Inter-VM shared memory (rev 01).
 // Example Output line from lspci:
 // 00:0e.0 RAM memory: Red Hat, Inc. Inter-VM shared memory (rev 01)
+// Hint: make sure the JVM process has permissions to this file. By default only root has.
 SharedMemory memory = LinuxMappedFileSharedMemory.open("/sys/bus/pci/devices/0000:00:0e.0/resource2_wc");
 ````
 ##### Windows (ivshmem-plain and ivshmem-doorbell):

@@ -36,9 +36,7 @@ TARGET_DIR=../resources
 
 WINDOWS_CFLAGS=-I. -I$(WINDOWS_JDK)/include -I$(WINDOWS_JDK)/include/win32
 
-#-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector are added to prevent dependencies to new GLIBC versions.
-LINUX_CFLAGS=-I. -I$(LINUX_JDK)/include -I$(LINUX_JDK)/include/linux -fPIC -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector
-
+LINUX_CFLAGS=-I. -I$(LINUX_JDK)/include -I$(LINUX_JDK)/include/linux -fPIC $(LINUX_ADDITIONAL_CC_FLAGS)
 
 WINDOWS_LIBS =-lhid -lsetupapi
 

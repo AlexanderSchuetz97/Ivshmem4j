@@ -30,20 +30,22 @@ and since its is not possible to receive interrupts without one, interrupts are 
 Building Ivshmem4j on Windows is currently not possible.
 #### Linux:
 Requirements:
-* mingw-cross
-* gcc
+* mingw-cross (x86)
+* mingw-cross (i386)
+* gcc compiler (x86)
+* gcc compiler (i386)
 * make
 * bash
-* linux amd64 JDK 7 or greater
-* Windows amd64 JDK 7 or greater (only for headers)
+* linux JDK 7 or newer
+* Windows JDK 7 or newer (only for headers)
 
 JDK 7 (Oracle), 8 (OpenJDK) and 11 (OpenJDK) were tested.
 
-On Ubuntu all requirements can be installed by running:
+On a 64 bit Ubuntu all requirements for building can be installed by running:
 ````
-sudo apt-get install build-essential gcc-mingw-w64 openjdk-8-jdk
+sudo apt-get install build-essential gcc-mingw-w64 openjdk-8-jdk gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 gcc-i686-linux-gnu 
 ````
-Adjust for desired JDK version.
+You may have to adjust this command if you desire a different JDK version.
 
 To get the Windows JDK either copy the JDK home directory from a Windows installation or use other means 
 (such as msiextract or unzip) to extract the JDK home directory from a Windows setup file.
@@ -78,11 +80,14 @@ To install Ivshmem4j to a local maven repository you may instead/additionally ru
 https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/upstream-virtio/
 (Use version 0.1-161 or later)
 
+* Note: The Windows 7 Ivshmem driver seems broken and will always lead to a BSOD. Only Windows 10 was tested. 
+Other versions of Windows may or may not work.
+
 ##### Linux host
 * ivshmem-plain
     * No dependencies required.
 * ivshmem-doorbell
-    * Ivshmem-server (should come bundled with QEMU)
+    * Ivshmem-server (one should come bundled with QEMU, but QEMU recommends not using it for production)
 
 ##### Linux guest
 * No dependencies required.
@@ -92,7 +97,7 @@ https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/upstream-virtio
 //Ivshmem4j does not load the native from the java.library.path to avoid introducing additional constraints
 //to your application. You may use this call to let Ivshmem4j handle loading the native libraries
 //but you may also decide to load them yourself by other means if this is more suitable for your application.
-//This only needs to be called once. Any repeaded calls are NOOPs.
+//This only needs to be called once. Any additonal calls are NOOPs.
 NativeLibraryLoaderHelper.loadNativeLibraries();
 ````
 ##### Linux Host(ivshmem-plain):
@@ -144,7 +149,7 @@ for (IvshmemWindowsDevice device : devices) {
 Writing:
 ````
 //Set the entire shared memory to 0.
-memory.write(0, (byte)0, memory.getSharedMemorySize());
+memory.set(0, (byte)0, memory.getSharedMemorySize());
 //Write "Hello World!" to the start of the shared memory.
 memory.write(0, "Hello World!".getBytes());
 

@@ -51,3 +51,11 @@ void sleepMillis(uint64_t aMillis) {
 	}
 
 }
+
+uint64_t currentTimeMillis() {
+    struct timespec spec;
+
+    clock_gettime(CLOCK_REALTIME, &spec);
+
+    return spec.tv_sec * 1000 + (spec.tv_nsec / NANOSECONDS_PER_MILISECOND);
+}

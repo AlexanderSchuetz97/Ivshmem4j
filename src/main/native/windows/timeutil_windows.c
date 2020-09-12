@@ -19,7 +19,16 @@
  */
 #include "../common/util/timeutil.h"
 #include <synchapi.h>
+#include <sys/timeb.h>
 
 void sleepMillis(uint64_t aMillis) {
 	Sleep(aMillis);
+}
+
+uint64_t currentTimeMillis() {
+	struct timeb tempCurrent;
+
+	ftime(&tempCurrent);
+
+	return (tempCurrent.time * 1000) + tempCurrent.millitm;
 }

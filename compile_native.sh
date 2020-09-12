@@ -45,7 +45,7 @@ echo "export WINDOWS_CC_I386=/usr/bin/i686-w64-mingw32-gcc" >> config.sh
 echo "export WINDOWS_JDK=" >> config.sh
 echo "#You may change this to any combination of the following: \"windows_amd64 windows_i386 linux_amd64 linux_i386\"" >> config.sh
 echo "export BUILD_TARGETS=\"all\"" >> config.sh
-echo "-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector are added to prevent dependencies to new GLIBC versions. This makes the build more portable to older systems. If you dont care about this remove this." >> config.sh
+echo "#-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector are added to prevent dependencies to new GLIBC versions. This makes the build more portable to older systems. If you dont care about this remove this." >> config.sh
 echo "export LINUX_ADDITIONAL_CC_FLAGS=\"-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -fno-stack-protector\"" >> config.sh
 chmod +x config.sh
 exit -1

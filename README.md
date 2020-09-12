@@ -197,7 +197,7 @@ memory.sendInterrupt(1,0);
 ## Changelog
 ###### 1.0
 Inital release
-###### 1.1 - SNAPSHOT
+###### 1.1
 1. Fixed a bug that prevented a call to "close" from actually closing the file descriptors and freeing allocated native memory.
 2. Moved spin/spinAndSet to native code for better performance (less JNI calls)
 3. Added more "convenience" methods for spin/spinAndSet when calling without a timeout.

@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Copyright Alexander Schütz, 2020
-
-This file is part of Ivshmem4j.
-
-Ivshmem4j is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-Ivshmem4j is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-A copy of the GNU General Public License should be provided
-in the COPYING file in top level directory of Ivshmem4j.
-If not, see <https://www.gnu.org/licenses/>.
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.aschuetz</groupId>
+    <groupId>io.github.alexanderschuetz97</groupId>
     <artifactId>ivshmem4j</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Ivshmem4j is a Java library to use QEMU ivshmem (inter virtual machine shared memory) from a Java
+        application running inside a JVM
+    </description>
+    <url>https://github.com/AlexanderSchuetz97/Ivshmem4j/tree/master</url>
+
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE Version 3</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>AlexanderSchuetz97</id>
+            <name>Alexander Schuetz</name>
+            <email>aschuetz@protonmail.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/AlexanderSchuetz97/JavaNativeUtils.git</connection>
+        <developerConnection>scm:git:ssh://github.com:AlexanderSchuetz97/JavaNativeUtils.git</developerConnection>
+        <url>https://github.com/AlexanderSchuetz97/JavaNativeUtils/tree/master</url>
+    </scm>
+
     <dependencies>
+        <dependency>
+            <groupId>io.github.alexanderschuetz97</groupId>
+            <artifactId>JavaNativeUtils</artifactId>
+            <version>1.5</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -46,45 +58,74 @@ If not, see <https://www.gnu.org/licenses/>.
             </resource>
         </resources>
         <plugins>
+            <!-- Generate Source Jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Generate Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Remove username from manifest -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Built-By>Ivshmem4j</Built-By>
+                            <Built-By>maven</Built-By>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
+
+            <!-- Sign all jars using GPG key -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Configure compiler for java 7 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>7</source>
+                    <target>7</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>exec-maven-plugin</artifactId>
-                <groupId>org.codehaus.mojo</groupId>
-                <executions>
-                    <execution>
-                        <id>Compile Natives</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>/usr/bin/env</executable>
-                            <arguments>
-                                <argument>bash</argument>
-                                <argument>${basedir}/compile_native.sh</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

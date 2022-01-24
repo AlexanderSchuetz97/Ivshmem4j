@@ -35,7 +35,6 @@ import io.github.alexanderschuetz97.nativeutils.api.exceptions.SharingViolationE
 import io.github.alexanderschuetz97.nativeutils.api.exceptions.UnknownNativeErrorException;
 import io.github.alexanderschuetz97.nativeutils.api.structs.GUID;
 
-import java.math.BigInteger;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -167,7 +166,6 @@ public class WindowsPCI implements IvshmemMemory {
                 for (int i = 0; i < ownVectors.length; i++) {
                     in.set(0, (byte) 0, in.size());
                     ownVectors[i] = nativeUtil.CreateEventA(0, false, false, null);
-                    System.out.println(new BigInteger(Long.toHexString(ownVectors[i]), 16).toString());
                     in.write(0, (short) i);
                     in.write(8, ownVectors[i]);
 
